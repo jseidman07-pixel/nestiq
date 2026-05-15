@@ -1,4 +1,6 @@
 from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import Optional
@@ -20,6 +22,12 @@ app = FastAPI(
     description="AI-powered real estate investment analysis agent",
     version="1.0.0",
 )
+
+app.mount("/static", StaticFiles(directory="app/static"), name="static")
+
+@app.get("/ui")
+def serve_ui():
+    return FileResponse("app/static/index.html")
 
 app.add_middleware(
     CORSMiddleware,
