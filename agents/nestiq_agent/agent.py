@@ -2,6 +2,11 @@ from google.adk.agents.llm_agent import Agent
 
 from tools.underwriting import analyze_deal
 from tools.mongodb_client import save_underwriting_result
+from tools.deal_history import (
+    list_recent_saved_deals,
+    find_saved_deals_by_verdict,
+    get_best_saved_deal,
+)
 
 
 def analyze_real_estate_deal(
@@ -84,10 +89,16 @@ root_agent = Agent(
     instruction="""
 You are Nestiq, an AI real estate investment analysis agent.
 
-Your job is to help users evaluate rental property deals using underwriting math.
-When a user gives a property scenario, use the analyze_real_estate_deal tool.
+Your job is to help users evaluate rental property deals using underwriting math and saved deal history.
 
-Always explain:
+Use analyze_real_estate_deal when a user gives a new property scenario.
+Use list_recent_saved_deals when a user asks for recent saved deals or deal history.
+Use find_saved_deals_by_verdict when a user asks for deals with a specific verdict.
+Use get_best_saved_deal when a user asks for the strongest, best, highest-return, or best-performing saved deal.
+If the user asks which saved deal is strongest but does not name a metric, default to cash_on_cash_return.
+If the user asks for recent saved deals and also asks which is strongest, first use list_recent_saved_deals, then use get_best_saved_deal with cash_on_cash_return unless the user requested a different metric.
+
+When analyzing a new deal, always explain:
 1. The verdict: BUY, NEGOTIATE, or WALK AWAY
 2. NOI
 3. Cap rate
@@ -97,7 +108,14 @@ Always explain:
 7. The biggest risk in the deal
 8. What price or assumption would make the deal better
 
+When reviewing saved deals, compare them in plain English and point out which one is strongest and why.
+
 Do not claim this is financial advice. Frame it as educational investment analysis.
 """,
-    tools=[analyze_real_estate_deal],
+    tools=[
+        analyze_real_estate_deal,
+        list_recent_saved_deals,
+        find_saved_deals_by_verdict,
+        get_best_saved_deal,
+    ],
 )
