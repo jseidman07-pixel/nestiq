@@ -23,8 +23,8 @@ def analyze_deal(property_data: Dict[str, Any]) -> Dict[str, Any]:
     annual_repairs = float(property_data.get("annual_repairs", monthly_rent * 12 * 0.08))
     annual_management = float(property_data.get("annual_management", monthly_rent * 12 * 0.08))
 
-    down_payment_pct = float(property_data.get("down_payment_pct", 0.25))
-    interest_rate = float(property_data.get("interest_rate", 0.07))
+    down_payment_pct = float(property_data.get("down_payment_pct", property_data.get("down_payment_percent", 25))) / 100 if float(property_data.get("down_payment_pct", property_data.get("down_payment_percent", 25))) > 1 else float(property_data.get("down_payment_pct", 0.25))
+    interest_rate = float(property_data.get("interest_rate", 7)) / 100 if float(property_data.get("interest_rate", 7)) > 1 else float(property_data.get("interest_rate", 0.07))
     loan_term_years = int(property_data.get("loan_term_years", 30))
     closing_costs = float(property_data.get("closing_costs", purchase_price * 0.03))
     repair_budget = float(property_data.get("repair_budget", 0))
