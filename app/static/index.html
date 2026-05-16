@@ -1492,7 +1492,7 @@ input[type="range"]::-webkit-slider-thumb {
 </div>
 
 <script>
-const API = 'http://127.0.0.1:8000';
+const API = window.location.origin;
 let userPrefs = { move_in: 'Fall 2026', roommates: 2, priority: 'balanced' };
 let currentStep = 0;
 let allProperties = [];
