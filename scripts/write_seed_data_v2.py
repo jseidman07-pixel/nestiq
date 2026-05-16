@@ -1,0 +1,657 @@
+"""
+Run this to write the expanded Auburn properties seed data.
+21 verified Auburn complexes with real pricing from official sources.
+"""
+import json
+from pathlib import Path
+
+properties = [
+    # ── EXISTING 8 ──────────────────────────────────────────────────────────
+    {
+        "property_id": "nestiq_001",
+        "name": "Yugo Auburn North",
+        "address": "575 Shelton Mill Rd, Auburn, AL 36830",
+        "coordinates": {"type": "Point", "coordinates": [-85.4878, 32.6199]},
+        "distance_to_campus_miles": 1.2,
+        "walk_time_minutes": 24,
+        "drive_time_minutes": 5,
+        "tiger_transit": True,
+        "floor_plans": [
+            {"beds": 1, "baths": 1, "sqft": 650, "rent_per_person": 1049, "available": True},
+            {"beds": 3, "baths": 3, "sqft": 1100, "rent_per_person": 689, "available": True},
+            {"beds": 4, "baths": 4, "sqft": 1400, "rent_per_person": 619, "available": True}
+        ],
+        "amenities": {
+            "pool": True, "gym": True, "study_rooms": True, "in_unit_laundry": True,
+            "furnished": True, "pet_friendly": True, "parking": True, "balcony": True,
+            "dishwasher": True, "bbq_area": True, "sports_court": True, "shuttle": True,
+            "wifi_included": False, "utilities_included": False, "rooftop": False,
+            "coffee_lounge": False, "game_room": False, "hot_tub": False, "dog_park": False
+        },
+        "fees": {"pet_deposit": 200, "pet_monthly": 50, "application_fee": 50, "admin_fee": 0, "security_deposit": 500},
+        "lease_terms": ["12-month"],
+        "available_date": "2026-08-15",
+        "landlord_id": "landlord_yugo",
+        "description": "Spacious townhome-style living with massive floor plans, resort amenities, and a private shuttle to campus. Over 800 students call this home. Fully furnished with hardwood floors, granite counters, and in-unit washer and dryer. BBQ area, sports court, and pool on site. Pet friendly community with 5-minute drive to all major Auburn facilities.",
+        "tags": ["luxury", "furnished", "shuttle", "townhome", "pet-friendly", "large-units"],
+        "price_tier": "mid", "reputation_score": 4.2, "total_units": 800, "year_built": 2018,
+        "utilities_estimate_monthly": 120, "university": "auburn"
+    },
+    {
+        "property_id": "nestiq_002",
+        "name": "The Grove at Auburn",
+        "address": "1375 S Donahue Dr, Auburn, AL 36832",
+        "coordinates": {"type": "Point", "coordinates": [-85.4812, 32.5971]},
+        "distance_to_campus_miles": 0.4,
+        "walk_time_minutes": 8,
+        "drive_time_minutes": 2,
+        "tiger_transit": True,
+        "floor_plans": [
+            {"beds": 2, "baths": 2, "sqft": 900, "rent_per_person": 750, "available": False},
+            {"beds": 3, "baths": 3, "sqft": 1150, "rent_per_person": 700, "available": False},
+            {"beds": 4, "baths": 4, "sqft": 1400, "rent_per_person": 660, "available": False}
+        ],
+        "amenities": {
+            "pool": True, "gym": True, "study_rooms": True, "in_unit_laundry": True,
+            "furnished": True, "pet_friendly": True, "parking": True, "balcony": False,
+            "dishwasher": True, "bbq_area": True, "sports_court": False, "shuttle": False,
+            "wifi_included": False, "utilities_included": False, "rooftop": False,
+            "coffee_lounge": True, "game_room": True, "hot_tub": False, "dog_park": False
+        },
+        "fees": {"pet_deposit": 300, "pet_monthly": 50, "application_fee": 50, "admin_fee": 0, "security_deposit": 400},
+        "lease_terms": ["12-month"],
+        "available_date": "2026-08-12",
+        "landlord_id": "landlord_grove",
+        "description": "Walking distance to campus and consistently rated Auburn best. Resort-style pool, outdoor fireplace, 24-hour fitness center, coffee lounge, and game room. Sold out for Fall 2026 waitlist only. The gold standard for Auburn student living near campus.",
+        "tags": ["walking-distance", "resort-pool", "coffee-lounge", "best-rated", "waitlist"],
+        "price_tier": "mid", "reputation_score": 4.7, "total_units": 600, "year_built": 2015,
+        "utilities_estimate_monthly": 110, "university": "auburn"
+    },
+    {
+        "property_id": "nestiq_003",
+        "name": "oLiv Auburn",
+        "address": "366 Genelda Ave, Auburn, AL 36830",
+        "coordinates": {"type": "Point", "coordinates": [-85.4801, 32.6087]},
+        "distance_to_campus_miles": 0.1,
+        "walk_time_minutes": 2,
+        "drive_time_minutes": 1,
+        "tiger_transit": False,
+        "floor_plans": [
+            {"beds": 1, "baths": 1, "sqft": 549, "rent_per_person": 1629, "available": True},
+            {"beds": 2, "baths": 2, "sqft": 805, "rent_per_person": 1149, "available": True},
+            {"beds": 3, "baths": 3, "sqft": 1177, "rent_per_person": 999, "available": True},
+            {"beds": 4, "baths": 4, "sqft": 1348, "rent_per_person": 899, "available": True},
+            {"beds": 5, "baths": 5, "sqft": 1422, "rent_per_person": 850, "available": True}
+        ],
+        "amenities": {
+            "pool": True, "gym": True, "study_rooms": True, "in_unit_laundry": True,
+            "furnished": True, "pet_friendly": True, "parking": True, "balcony": True,
+            "dishwasher": True, "bbq_area": False, "sports_court": False, "shuttle": False,
+            "wifi_included": True, "utilities_included": False, "rooftop": True,
+            "coffee_lounge": False, "game_room": False, "hot_tub": True, "dog_park": True
+        },
+        "fees": {"pet_deposit": 0, "pet_monthly": 25, "application_fee": 75, "admin_fee": 200, "security_deposit": 0},
+        "lease_terms": ["12-month"],
+        "available_date": "2026-08-15",
+        "landlord_id": "landlord_oliv",
+        "description": "Steps from campus and downtown Auburn. Rooftop sundeck and pool, spa with sauna and steam room, yoga room, and complimentary Talkspace mental health access. VIP and Mansion upgrades available with smart home tech, hot tub, and private terrace. New Here Coffee shop in lobby. The most premium student address in Auburn.",
+        "tags": ["steps-from-campus", "rooftop", "spa", "luxury", "premium", "downtown", "talkspace"],
+        "price_tier": "luxury", "reputation_score": 4.4, "total_units": 350, "year_built": 2021,
+        "utilities_estimate_monthly": 130, "university": "auburn"
+    },
+    {
+        "property_id": "nestiq_004",
+        "name": "The Magnolia at Auburn",
+        "address": "285 N Gay St, Auburn, AL 36830",
+        "coordinates": {"type": "Point", "coordinates": [-85.4815, 32.6071]},
+        "distance_to_campus_miles": 0.3,
+        "walk_time_minutes": 6,
+        "drive_time_minutes": 2,
+        "tiger_transit": True,
+        "floor_plans": [
+            {"beds": 2, "baths": 2, "sqft": 850, "rent_per_person": 825, "available": True},
+            {"beds": 3, "baths": 3, "sqft": 1100, "rent_per_person": 775, "available": True},
+            {"beds": 4, "baths": 4, "sqft": 1350, "rent_per_person": 725, "available": True}
+        ],
+        "amenities": {
+            "pool": True, "gym": True, "study_rooms": True, "in_unit_laundry": True,
+            "furnished": True, "pet_friendly": True, "parking": True, "balcony": False,
+            "dishwasher": True, "bbq_area": False, "sports_court": False, "shuttle": False,
+            "wifi_included": True, "utilities_included": False, "rooftop": False,
+            "coffee_lounge": False, "game_room": False, "hot_tub": False, "dog_park": False
+        },
+        "fees": {"pet_deposit": 300, "pet_monthly": 50, "application_fee": 15, "admin_fee": 100, "security_deposit": 300},
+        "lease_terms": ["12-month"],
+        "available_date": "2026-08-12",
+        "landlord_id": "landlord_magnolia",
+        "description": "Walking distance to campus with WiFi included in rent. Private bedrooms with individual leases. 12-installment lease August to July. Annual admin fee of 100 dollars applies. Good balance of location and value for students who want proximity without the luxury price tag.",
+        "tags": ["walking-distance", "wifi-included", "individual-leases", "mid-range", "value"],
+        "price_tier": "mid", "reputation_score": 4.1, "total_units": 400, "year_built": 2017,
+        "utilities_estimate_monthly": 40, "university": "auburn"
+    },
+    {
+        "property_id": "nestiq_005",
+        "name": "Logan Square Auburn",
+        "address": "733 W Glenn Ave, Auburn, AL 36832",
+        "coordinates": {"type": "Point", "coordinates": [-85.4834, 32.5989]},
+        "distance_to_campus_miles": 0.5,
+        "walk_time_minutes": 10,
+        "drive_time_minutes": 3,
+        "tiger_transit": True,
+        "floor_plans": [
+            {"beds": 1, "baths": 1, "sqft": 536, "rent_per_person": 950, "available": False},
+            {"beds": 2, "baths": 1.5, "sqft": 936, "rent_per_person": 995, "available": True},
+            {"beds": 2, "baths": 2, "sqft": 850, "rent_per_person": 1125, "available": True},
+            {"beds": 3, "baths": 3, "sqft": 1205, "rent_per_person": 905, "available": True},
+            {"beds": 3, "baths": 3, "sqft": 1402, "rent_per_person": 860, "available": True}
+        ],
+        "amenities": {
+            "pool": True, "gym": True, "study_rooms": False, "in_unit_laundry": True,
+            "furnished": True, "pet_friendly": True, "parking": True, "balcony": True,
+            "dishwasher": True, "bbq_area": True, "sports_court": True, "shuttle": True,
+            "wifi_included": True, "utilities_included": False, "rooftop": False,
+            "coffee_lounge": True, "game_room": False, "hot_tub": False, "dog_park": True
+        },
+        "fees": {"pet_deposit": 300, "pet_monthly": 50, "application_fee": 50, "admin_fee": 0, "security_deposit": 400},
+        "lease_terms": ["12-month", "6-month"],
+        "available_date": "2026-08-01",
+        "landlord_id": "landlord_logan",
+        "description": "Half mile from Auburn campus with multiple Tiger Transit stops. Resort-style pool, 24-hour fitness center, basketball court, coffee bar, and two fenced dog parks. Townhome and flat floor plans available both furnished and unfurnished. Wood-style flooring, stainless appliances, and private balconies in select units. WiFi included.",
+        "tags": ["close-to-campus", "tiger-transit", "dog-park", "townhome", "wifi-included", "coffee-bar"],
+        "price_tier": "mid", "reputation_score": 3.9, "total_units": 280, "year_built": 2016,
+        "utilities_estimate_monthly": 100, "university": "auburn"
+    },
+    {
+        "property_id": "nestiq_006",
+        "name": "Shelton Mill Townhomes",
+        "address": "601 Shelton Mill Rd, Auburn, AL 36830",
+        "coordinates": {"type": "Point", "coordinates": [-85.4882, 32.6205]},
+        "distance_to_campus_miles": 1.3,
+        "walk_time_minutes": 26,
+        "drive_time_minutes": 5,
+        "tiger_transit": True,
+        "floor_plans": [
+            {"beds": 1, "baths": 1, "sqft": 750, "rent_per_person": 875, "available": True},
+            {"beds": 2, "baths": 2, "sqft": 1050, "rent_per_person": 775, "available": True},
+            {"beds": 3, "baths": 3, "sqft": 1350, "rent_per_person": 725, "available": True}
+        ],
+        "amenities": {
+            "pool": False, "gym": True, "study_rooms": False, "in_unit_laundry": True,
+            "furnished": False, "pet_friendly": True, "parking": True, "balcony": True,
+            "dishwasher": True, "bbq_area": False, "sports_court": False, "shuttle": True,
+            "wifi_included": False, "utilities_included": False, "rooftop": False,
+            "coffee_lounge": False, "game_room": True, "hot_tub": False, "dog_park": False
+        },
+        "fees": {"pet_deposit": 250, "pet_monthly": 40, "application_fee": 40, "admin_fee": 0, "security_deposit": 350},
+        "lease_terms": ["12-month"],
+        "available_date": "2026-08-01",
+        "landlord_id": "landlord_shelton",
+        "description": "Spacious townhome-style units just minutes from Auburn University. Tiger Transit stops at the front office. Recently renovated with upgraded gym and game room. Walk-in closets, private patios, and washer dryer connections. Strong value for students who need room to spread out. Not furnished.",
+        "tags": ["townhome", "tiger-transit", "renovated", "game-room", "value", "spacious"],
+        "price_tier": "mid", "reputation_score": 4.0, "total_units": 220, "year_built": 2014,
+        "utilities_estimate_monthly": 145, "university": "auburn"
+    },
+    {
+        "property_id": "nestiq_007",
+        "name": "1322 North Apartments",
+        "address": "1322 N College St, Auburn, AL 36830",
+        "coordinates": {"type": "Point", "coordinates": [-85.4821, 32.6134]},
+        "distance_to_campus_miles": 0.5,
+        "walk_time_minutes": 10,
+        "drive_time_minutes": 3,
+        "tiger_transit": False,
+        "floor_plans": [
+            {"beds": 1, "baths": 1, "sqft": 750, "rent_per_person": 1100, "available": True},
+            {"beds": 2, "baths": 2, "sqft": 1050, "rent_per_person": 950, "available": True},
+            {"beds": 3, "baths": 3, "sqft": 1350, "rent_per_person": 875, "available": True}
+        ],
+        "amenities": {
+            "pool": True, "gym": True, "study_rooms": True, "in_unit_laundry": True,
+            "furnished": True, "pet_friendly": False, "parking": True, "balcony": True,
+            "dishwasher": True, "bbq_area": False, "sports_court": False, "shuttle": False,
+            "wifi_included": False, "utilities_included": False, "rooftop": False,
+            "coffee_lounge": False, "game_room": False, "hot_tub": False, "dog_park": False
+        },
+        "fees": {"pet_deposit": 0, "pet_monthly": 0, "application_fee": 60, "admin_fee": 0, "security_deposit": 500},
+        "lease_terms": ["12-month"],
+        "available_date": "2026-08-15",
+        "landlord_id": "landlord_1322",
+        "description": "Luxury one two and three bedroom apartments walking distance to shopping dining and Auburn campus. Spacious layouts with premium finishes fully furnished. No pets allowed. Less than 5 minutes from Auburn University. Strong management reputation and well-maintained facilities.",
+        "tags": ["luxury", "furnished", "walking-distance", "no-pets", "premium-finishes"],
+        "price_tier": "luxury", "reputation_score": 4.5, "total_units": 180, "year_built": 2020,
+        "utilities_estimate_monthly": 125, "university": "auburn"
+    },
+    {
+        "property_id": "nestiq_008",
+        "name": "Lakewood Commons",
+        "address": "154 E University Dr, Auburn, AL 36832",
+        "coordinates": {"type": "Point", "coordinates": [-85.4756, 32.6021]},
+        "distance_to_campus_miles": 0.8,
+        "walk_time_minutes": 16,
+        "drive_time_minutes": 4,
+        "tiger_transit": False,
+        "floor_plans": [
+            {"beds": 2, "baths": 1, "sqft": 900, "rent_per_person": 650, "available": True},
+            {"beds": 3, "baths": 2, "sqft": 1100, "rent_per_person": 575, "available": True}
+        ],
+        "amenities": {
+            "pool": False, "gym": False, "study_rooms": False, "in_unit_laundry": True,
+            "furnished": True, "pet_friendly": True, "parking": True, "balcony": False,
+            "dishwasher": True, "bbq_area": False, "sports_court": False, "shuttle": False,
+            "wifi_included": False, "utilities_included": False, "rooftop": False,
+            "coffee_lounge": False, "game_room": False, "hot_tub": False, "dog_park": False
+        },
+        "fees": {"pet_deposit": 200, "pet_monthly": 35, "application_fee": 30, "admin_fee": 0, "security_deposit": 300},
+        "lease_terms": ["12-month", "6-month"],
+        "available_date": "2026-06-01",
+        "landlord_id": "landlord_lakewood",
+        "description": "Budget-friendly option near East University Drive. Furnished units with in-unit laundry and pet-friendly policy. No pool or gym but the lowest price per person of any furnished option in Auburn. Good for students on a tight budget who prioritize cost over amenities. Flexible lease terms available.",
+        "tags": ["budget", "furnished", "pet-friendly", "flexible-lease", "affordable"],
+        "price_tier": "budget", "reputation_score": 3.6, "total_units": 120, "year_built": 2008,
+        "utilities_estimate_monthly": 155, "university": "auburn"
+    },
+
+    # ── NEW PROPERTIES ──────────────────────────────────────────────────────
+    {
+        "property_id": "nestiq_009",
+        "name": "Heritage Terrace",
+        "address": "623 W Glenn Ave, Auburn, AL 36832",
+        "coordinates": {"type": "Point", "coordinates": [-85.4901, 32.6102]},
+        "distance_to_campus_miles": 0.3,
+        "walk_time_minutes": 6,
+        "drive_time_minutes": 2,
+        "tiger_transit": True,
+        "floor_plans": [
+            {"beds": 2, "baths": 2, "sqft": 880, "rent_per_person": 750, "available": True}
+        ],
+        "amenities": {
+            "pool": False, "gym": False, "study_rooms": False, "in_unit_laundry": True,
+            "furnished": False, "pet_friendly": True, "parking": True, "balcony": False,
+            "dishwasher": False, "bbq_area": False, "sports_court": False, "shuttle": True,
+            "wifi_included": True, "utilities_included": False, "rooftop": False,
+            "coffee_lounge": False, "game_room": False, "hot_tub": False, "dog_park": False
+        },
+        "fees": {"pet_deposit": 300, "pet_monthly": 50, "application_fee": 50, "admin_fee": 0, "security_deposit": 1500},
+        "lease_terms": ["12-month"],
+        "available_date": "2026-08-13",
+        "landlord_id": "landlord_heritage",
+        "description": "Three-story complex two blocks from Auburn University campus on West Glenn Avenue. Built in 2002, offering 2BR 2BA units with large kitchen open to spacious living room, walk-in closets, and equal-size bedrooms. Garbage, pest control, and internet included in rent. Simple, practical, and genuinely close to campus without luxury pricing. Good for students who want proximity without paying premium rates.",
+        "tags": ["close-to-campus", "wifi-included", "practical", "no-frills", "pet-friendly", "2-blocks-to-campus"],
+        "price_tier": "mid", "reputation_score": 3.8, "total_units": 24, "year_built": 2002,
+        "utilities_estimate_monthly": 100, "university": "auburn"
+    },
+    {
+        "property_id": "nestiq_010",
+        "name": "Old Row at The Balcony",
+        "address": "137 E Glenn Ave, Auburn, AL 36830",
+        "coordinates": {"type": "Point", "coordinates": [-85.4798, 32.6089]},
+        "distance_to_campus_miles": 0.3,
+        "walk_time_minutes": 6,
+        "drive_time_minutes": 1,
+        "tiger_transit": False,
+        "floor_plans": [
+            {"beds": 1, "baths": 1, "sqft": 442, "rent_per_person": 1850, "available": True},
+            {"beds": 5, "baths": 5, "sqft": 2450, "rent_per_person": 1375, "available": True}
+        ],
+        "amenities": {
+            "pool": False, "gym": True, "study_rooms": False, "in_unit_laundry": True,
+            "furnished": True, "pet_friendly": True, "parking": True, "balcony": True,
+            "dishwasher": True, "bbq_area": False, "sports_court": False, "shuttle": False,
+            "wifi_included": False, "utilities_included": False, "rooftop": False,
+            "coffee_lounge": False, "game_room": False, "hot_tub": False, "dog_park": False
+        },
+        "fees": {"pet_deposit": 0, "pet_monthly": 0, "application_fee": 40, "admin_fee": 249, "security_deposit": 299},
+        "lease_terms": ["12-month"],
+        "available_date": "2026-08-14",
+        "landlord_id": "landlord_balcony",
+        "description": "Luxury downtown Auburn living on East Glenn Avenue steps from Toomers Corner, The Hound, and Samford Lawn. Hardwood style flooring, quartz countertops, stainless appliances, and roll-up living room garage doors. Next-level fitness center and reserved parking available. Pet friendly with furnished and unfurnished options. New management 2025. Reviews note parking challenges. Ideal for students who want to be in the heart of downtown.",
+        "tags": ["downtown", "luxury", "steps-to-toomers", "pet-friendly", "furnished", "new-management"],
+        "price_tier": "luxury", "reputation_score": 3.7, "total_units": 80, "year_built": 2015,
+        "utilities_estimate_monthly": 130, "university": "auburn"
+    },
+    {
+        "property_id": "nestiq_011",
+        "name": "The Standard at Auburn",
+        "address": "234 N Gay St, Auburn, AL 36830",
+        "coordinates": {"type": "Point", "coordinates": [-85.4797, 32.6101]},
+        "distance_to_campus_miles": 0.2,
+        "walk_time_minutes": 4,
+        "drive_time_minutes": 1,
+        "tiger_transit": False,
+        "floor_plans": [
+            {"beds": 1, "baths": 1, "sqft": 526, "rent_per_person": 1803, "available": False},
+            {"beds": 2, "baths": 1, "sqft": 778, "rent_per_person": 1400, "available": False},
+            {"beds": 3, "baths": 2, "sqft": 1009, "rent_per_person": 1300, "available": False},
+            {"beds": 4, "baths": 4, "sqft": 1452, "rent_per_person": 1218, "available": False},
+            {"beds": 5, "baths": 5, "sqft": 1907, "rent_per_person": 1207, "available": False}
+        ],
+        "amenities": {
+            "pool": True, "gym": True, "study_rooms": True, "in_unit_laundry": True,
+            "furnished": True, "pet_friendly": True, "parking": True, "balcony": True,
+            "dishwasher": True, "bbq_area": False, "sports_court": False, "shuttle": False,
+            "wifi_included": True, "utilities_included": False, "rooftop": True,
+            "coffee_lounge": True, "game_room": True, "hot_tub": False, "dog_park": True
+        },
+        "fees": {"pet_deposit": 0, "pet_monthly": 0, "application_fee": 0, "admin_fee": 0, "security_deposit": 0},
+        "lease_terms": ["11.5-month"],
+        "available_date": "2026-08-15",
+        "landlord_id": "landlord_standard",
+        "description": "Premier luxury student housing steps from Auburn University. Rooftop pool and sundeck with city views, sauna, arcade and game room, coffee lounge, computer lab, and private study pods. Studio through 5-bedroom floor plans all fully furnished with flat screen TV, granite counters, and stainless appliances. Covered garage parking $45 per month extra. Roommate matching via RoomSync. Most floor plans currently sold out for Fall 2026. One of the best locations in Auburn.",
+        "tags": ["rooftop-pool", "luxury", "steps-to-campus", "sauna", "arcade", "sold-out", "garage-parking"],
+        "price_tier": "luxury", "reputation_score": 4.4, "total_units": 500, "year_built": 2019,
+        "utilities_estimate_monthly": 100, "university": "auburn"
+    },
+    {
+        "property_id": "nestiq_012",
+        "name": "Samford Square",
+        "address": "202 W Longleaf Dr, Auburn, AL 36832",
+        "coordinates": {"type": "Point", "coordinates": [-85.4871, 32.5991]},
+        "distance_to_campus_miles": 1.8,
+        "walk_time_minutes": 36,
+        "drive_time_minutes": 6,
+        "tiger_transit": True,
+        "floor_plans": [
+            {"beds": 2, "baths": 2, "sqft": 413, "rent_per_person": 859, "available": True},
+            {"beds": 3, "baths": 3, "sqft": 361, "rent_per_person": 645, "available": True},
+            {"beds": 4, "baths": 4, "sqft": 1365, "rent_per_person": 605, "available": True}
+        ],
+        "amenities": {
+            "pool": True, "gym": True, "study_rooms": True, "in_unit_laundry": True,
+            "furnished": True, "pet_friendly": True, "parking": True, "balcony": False,
+            "dishwasher": True, "bbq_area": True, "sports_court": False, "shuttle": True,
+            "wifi_included": False, "utilities_included": False, "rooftop": False,
+            "coffee_lounge": True, "game_room": True, "hot_tub": False, "dog_park": False
+        },
+        "fees": {"pet_deposit": 0, "pet_monthly": 0, "application_fee": 0, "admin_fee": 0, "security_deposit": 0},
+        "lease_terms": ["12-month"],
+        "available_date": "2026-08-12",
+        "landlord_id": "landlord_samford",
+        "description": "Formerly Tiger Lodge, fully renovated as Samford Square. Budget-friendly with individual leases, Tiger Transit stop on site, resort pool, hammock garden, coffee bar, business center, and theater room. Internet plus water and sewer at $15 flat rate monthly. Spacious 4BR units are the best value per bedroom in Auburn. Strong management reviews. Less than 5 minutes from campus by car. Good choice for students who prioritize price and community over proximity.",
+        "tags": ["budget-friendly", "individual-leases", "tiger-transit", "renovated", "hammock-garden", "theater-room"],
+        "price_tier": "budget", "reputation_score": 4.1, "total_units": 756, "year_built": 2002,
+        "utilities_estimate_monthly": 115, "university": "auburn"
+    },
+    {
+        "property_id": "nestiq_013",
+        "name": "The Union Auburn",
+        "address": "900 W Glenn Ave, Auburn, AL 36832",
+        "coordinates": {"type": "Point", "coordinates": [-85.4991, 32.6092]},
+        "distance_to_campus_miles": 1.5,
+        "walk_time_minutes": 18,
+        "drive_time_minutes": 5,
+        "tiger_transit": True,
+        "floor_plans": [
+            {"beds": 2, "baths": 2, "sqft": 797, "rent_per_person": 850, "available": True},
+            {"beds": 3, "baths": 3, "sqft": 1806, "rent_per_person": 800, "available": True},
+            {"beds": 4, "baths": 4, "sqft": 1664, "rent_per_person": 750, "available": True},
+            {"beds": 5, "baths": 5, "sqft": 2197, "rent_per_person": 700, "available": True},
+            {"beds": 6, "baths": 6, "sqft": 2213, "rent_per_person": 679, "available": True}
+        ],
+        "amenities": {
+            "pool": True, "gym": True, "study_rooms": True, "in_unit_laundry": True,
+            "furnished": True, "pet_friendly": True, "parking": True, "balcony": False,
+            "dishwasher": True, "bbq_area": True, "sports_court": False, "shuttle": True,
+            "wifi_included": True, "utilities_included": False, "rooftop": False,
+            "coffee_lounge": True, "game_room": False, "hot_tub": False, "dog_park": True
+        },
+        "fees": {"pet_deposit": 0, "pet_monthly": 25, "application_fee": 0, "admin_fee": 0, "security_deposit": 0},
+        "lease_terms": ["12-month"],
+        "available_date": "2026-08-15",
+        "landlord_id": "landlord_union",
+        "description": "Over 21000 square feet of world-class amenities including resort pool with jumbotron, two-story fitness center, yoga room, outdoor kitchen, 20 private study rooms, coffeehouse clubhouse, and outdoor terrace with pool table. Offers the largest floor plans in Auburn going up to 6 bedrooms. Individual leases by the bed. Tiger Transit route. 18-minute walk to campus. Subletting allowed. Strong community atmosphere with weekly events.",
+        "tags": ["largest-floorplans", "6-bedroom", "jumbotron", "yoga", "coffeehouse", "individual-leases", "tiger-transit"],
+        "price_tier": "mid", "reputation_score": 4.2, "total_units": 500, "year_built": 2018,
+        "utilities_estimate_monthly": 90, "university": "auburn"
+    },
+    {
+        "property_id": "nestiq_014",
+        "name": "The Mill at Auburn",
+        "address": "300 E Longleaf Dr, Auburn, AL 36832",
+        "coordinates": {"type": "Point", "coordinates": [-85.4862, 32.5985]},
+        "distance_to_campus_miles": 2.3,
+        "walk_time_minutes": 46,
+        "drive_time_minutes": 6,
+        "tiger_transit": True,
+        "floor_plans": [
+            {"beds": 2, "baths": 2, "sqft": 860, "rent_per_person": 765, "available": True},
+            {"beds": 2, "baths": 2, "sqft": 860, "rent_per_person": 815, "available": True},
+            {"beds": 3, "baths": 3, "sqft": 1173, "rent_per_person": 720, "available": True},
+            {"beds": 4, "baths": 4, "sqft": 1472, "rent_per_person": 590, "available": True}
+        ],
+        "amenities": {
+            "pool": True, "gym": True, "study_rooms": False, "in_unit_laundry": True,
+            "furnished": True, "pet_friendly": True, "parking": True, "balcony": True,
+            "dishwasher": True, "bbq_area": True, "sports_court": True, "shuttle": True,
+            "wifi_included": False, "utilities_included": False, "rooftop": False,
+            "coffee_lounge": False, "game_room": False, "hot_tub": True, "dog_park": True
+        },
+        "fees": {"pet_deposit": 0, "pet_monthly": 0, "application_fee": 50, "admin_fee": 0, "security_deposit": 0},
+        "lease_terms": ["12-month"],
+        "available_date": "2026-08-10",
+        "landlord_id": "landlord_mill",
+        "description": "312-unit community on South College Street with resort pool, lap pool, hot tub, lighted basketball court, dog park, and the largest amount of resident parking in Auburn. Granite countertops, custom cabinetry, faux hardwood flooring, private patios and balconies. 4BR units at $590 per person are among the best value furnished options in Auburn. Tiger Transit shuttle stop. $100 gift card for first 25 Fall 2026 leases.",
+        "tags": ["best-value-4br", "lap-pool", "basketball", "dog-park", "most-parking", "south-college-st"],
+        "price_tier": "mid", "reputation_score": 4.0, "total_units": 312, "year_built": 2008,
+        "utilities_estimate_monthly": 140, "university": "auburn"
+    },
+    {
+        "property_id": "nestiq_015",
+        "name": "320 West Mag",
+        "address": "320 W Magnolia Ave, Auburn, AL 36832",
+        "coordinates": {"type": "Point", "coordinates": [-85.4855, 32.6093]},
+        "distance_to_campus_miles": 0.05,
+        "walk_time_minutes": 1,
+        "drive_time_minutes": 1,
+        "tiger_transit": True,
+        "floor_plans": [
+            {"beds": 2, "baths": 2, "sqft": 958, "rent_per_person": 1610, "available": True},
+            {"beds": 3, "baths": 3, "sqft": 1357, "rent_per_person": 1500, "available": True},
+            {"beds": 4, "baths": 4, "sqft": 1525, "rent_per_person": 1400, "available": True},
+            {"beds": 5, "baths": 5, "sqft": 1752, "rent_per_person": 1350, "available": True}
+        ],
+        "amenities": {
+            "pool": True, "gym": True, "study_rooms": True, "in_unit_laundry": True,
+            "furnished": True, "pet_friendly": True, "parking": True, "balcony": True,
+            "dishwasher": True, "bbq_area": True, "sports_court": False, "shuttle": True,
+            "wifi_included": True, "utilities_included": False, "rooftop": False,
+            "coffee_lounge": True, "game_room": False, "hot_tub": False, "dog_park": True
+        },
+        "fees": {"pet_deposit": 0, "pet_monthly": 0, "application_fee": 0, "admin_fee": 0, "security_deposit": 0},
+        "lease_terms": ["12-month"],
+        "available_date": "2026-08-15",
+        "landlord_id": "landlord_320westmag",
+        "description": "One crosswalk to the Ginn Concourse and main campus. Elevated pool overlooking campus, multi-level fitness center with dedicated weight room, study rooms on every floor, tech center, Chick-fil-A and coffee shop in the building, on-site security, and dog wash station. Balconies on most units, granite countertops, wood-look flooring, private bathroom in every bedroom, 55 inch TV in living room. Literally cannot get closer to Auburn campus. Premium price reflects unbeatable location.",
+        "tags": ["closest-to-campus", "chick-fil-a-on-site", "elevated-pool", "study-rooms-every-floor", "on-site-security"],
+        "price_tier": "luxury", "reputation_score": 4.5, "total_units": 300, "year_built": 2022,
+        "utilities_estimate_monthly": 80, "university": "auburn"
+    },
+    {
+        "property_id": "nestiq_016",
+        "name": "The Collective at Auburn",
+        "address": "721 Aspen Heights Ln, Auburn, AL 36830",
+        "coordinates": {"type": "Point", "coordinates": [-85.4901, 32.5978]},
+        "distance_to_campus_miles": 1.5,
+        "walk_time_minutes": 30,
+        "drive_time_minutes": 5,
+        "tiger_transit": True,
+        "floor_plans": [
+            {"beds": 2, "baths": 2.5, "sqft": 1369, "rent_per_person": 1095, "available": True},
+            {"beds": 3, "baths": 3.5, "sqft": 1781, "rent_per_person": 1095, "available": True},
+            {"beds": 4, "baths": 4.5, "sqft": 2220, "rent_per_person": 1035, "available": True}
+        ],
+        "amenities": {
+            "pool": True, "gym": True, "study_rooms": True, "in_unit_laundry": True,
+            "furnished": True, "pet_friendly": True, "parking": True, "balcony": True,
+            "dishwasher": True, "bbq_area": True, "sports_court": True, "shuttle": True,
+            "wifi_included": True, "utilities_included": False, "rooftop": False,
+            "coffee_lounge": False, "game_room": True, "hot_tub": True, "dog_park": False
+        },
+        "fees": {"pet_deposit": 0, "pet_monthly": 0, "application_fee": 0, "admin_fee": 0, "security_deposit": 0},
+        "lease_terms": ["12-month"],
+        "available_date": "2026-08-15",
+        "landlord_id": "landlord_collective",
+        "description": "Cottage-style apartments with private patios and porch swings. Resort pool with hot tub, cardio studio, 24-hour fitness center, sand volleyball court, basketball court, billiards and foosball game room, and controlled access gates. Huge private bedrooms with walk-in closets, bonus half bath for guests, stained concrete flooring, quartz countertops. Internet and lawn care included. Premium and standard finish options available. Community property manager Preiss Company.",
+        "tags": ["cottage-style", "porch-swings", "sand-volleyball", "hot-tub", "huge-bedrooms", "internet-included"],
+        "price_tier": "mid", "reputation_score": 4.2, "total_units": 200, "year_built": 2017,
+        "utilities_estimate_monthly": 100, "university": "auburn"
+    },
+    {
+        "property_id": "nestiq_017",
+        "name": "Eagles West Apartments",
+        "address": "700 W Magnolia Ave, Auburn, AL 36832",
+        "coordinates": {"type": "Point", "coordinates": [-85.4878, 32.6091]},
+        "distance_to_campus_miles": 0.4,
+        "walk_time_minutes": 8,
+        "drive_time_minutes": 2,
+        "tiger_transit": True,
+        "floor_plans": [
+            {"beds": 1, "baths": 1, "sqft": 450, "rent_per_person": 1489, "available": True},
+            {"beds": 2, "baths": 2, "sqft": 900, "rent_per_person": 763, "available": False}
+        ],
+        "amenities": {
+            "pool": True, "gym": True, "study_rooms": False, "in_unit_laundry": True,
+            "furnished": False, "pet_friendly": True, "parking": True, "balcony": False,
+            "dishwasher": True, "bbq_area": False, "sports_court": True, "shuttle": True,
+            "wifi_included": True, "utilities_included": False, "rooftop": False,
+            "coffee_lounge": False, "game_room": False, "hot_tub": False, "dog_park": True
+        },
+        "fees": {"pet_deposit": 0, "pet_monthly": 0, "application_fee": 0, "admin_fee": 0, "security_deposit": 0},
+        "lease_terms": ["10-month", "12-month"],
+        "available_date": "2026-08-13",
+        "landlord_id": "landlord_eagleswest",
+        "description": "Walking distance to Auburn University campus and downtown. Saltwater pool, pet park, basketball court, outdoor wood burning fireplace, and two Tiger Transit stops. Water, trash, pest control, and high-speed WiFi included in rent. Private bathrooms, in-unit washer dryer, and modern finishes. Unfurnished. Recommended by 99 percent of residents. Good honest alternative to big student complexes with strong management reputation.",
+        "tags": ["saltwater-pool", "wifi-included", "walking-distance", "outdoor-fireplace", "unfurnished", "high-rated"],
+        "price_tier": "mid", "reputation_score": 4.6, "total_units": 150, "year_built": 2014,
+        "utilities_estimate_monthly": 80, "university": "auburn"
+    },
+    {
+        "property_id": "nestiq_018",
+        "name": "The Avenue Auburn",
+        "address": "324 Rosemary Ave, Auburn, AL 36830",
+        "coordinates": {"type": "Point", "coordinates": [-85.4822, 32.6148]},
+        "distance_to_campus_miles": 0.6,
+        "walk_time_minutes": 12,
+        "drive_time_minutes": 3,
+        "tiger_transit": False,
+        "floor_plans": [
+            {"beds": 2, "baths": 2, "sqft": 1200, "rent_per_person": 900, "available": True},
+            {"beds": 3, "baths": 3, "sqft": 1800, "rent_per_person": 850, "available": True},
+            {"beds": 4, "baths": 4, "sqft": 2250, "rent_per_person": 800, "available": True},
+            {"beds": 5, "baths": 5, "sqft": 2400, "rent_per_person": 750, "available": True}
+        ],
+        "amenities": {
+            "pool": True, "gym": True, "study_rooms": False, "in_unit_laundry": True,
+            "furnished": False, "pet_friendly": True, "parking": True, "balcony": True,
+            "dishwasher": True, "bbq_area": False, "sports_court": False, "shuttle": False,
+            "wifi_included": True, "utilities_included": True, "rooftop": False,
+            "coffee_lounge": False, "game_room": False, "hot_tub": False, "dog_park": False
+        },
+        "fees": {"pet_deposit": 0, "pet_monthly": 0, "application_fee": 0, "admin_fee": 0, "security_deposit": 0},
+        "lease_terms": ["12-month"],
+        "available_date": "2026-08-15",
+        "landlord_id": "landlord_avenue",
+        "description": "Six blocks north of Toomers Corner. Cottage and manor house style with rocking chair front porches, 9-foot ceilings, chef's kitchen with stainless appliances and granite counters, and large private bedrooms. Water, fiber-optic internet, parking, pest control, and lawn service all included in rent. Community resort pool and fitness center. No maintenance living. Unique architectural character unlike any student complex in Auburn. Unfurnished.",
+        "tags": ["cottage-style", "rocking-chair-porch", "utilities-included", "9-foot-ceilings", "walkable", "no-maintenance"],
+        "price_tier": "mid", "reputation_score": 4.3, "total_units": 100, "year_built": 2016,
+        "utilities_estimate_monthly": 0, "university": "auburn"
+    },
+    {
+        "property_id": "nestiq_019",
+        "name": "The Boulevard Auburn",
+        "address": "509 Harper Ave, Auburn, AL 36830",
+        "coordinates": {"type": "Point", "coordinates": [-85.4831, 32.6141]},
+        "distance_to_campus_miles": 0.9,
+        "walk_time_minutes": 13,
+        "drive_time_minutes": 3,
+        "tiger_transit": True,
+        "floor_plans": [
+            {"beds": 2, "baths": 2, "sqft": 1042, "rent_per_person": 900, "available": True},
+            {"beds": 3, "baths": 3, "sqft": 1743, "rent_per_person": 850, "available": True},
+            {"beds": 4, "baths": 4, "sqft": 2063, "rent_per_person": 800, "available": True},
+            {"beds": 5, "baths": 5, "sqft": 2095, "rent_per_person": 750, "available": True}
+        ],
+        "amenities": {
+            "pool": True, "gym": True, "study_rooms": False, "in_unit_laundry": True,
+            "furnished": False, "pet_friendly": True, "parking": True, "balcony": True,
+            "dishwasher": True, "bbq_area": False, "sports_court": False, "shuttle": True,
+            "wifi_included": True, "utilities_included": False, "rooftop": False,
+            "coffee_lounge": False, "game_room": False, "hot_tub": False, "dog_park": False
+        },
+        "fees": {"pet_deposit": 0, "pet_monthly": 0, "application_fee": 0, "admin_fee": 0, "security_deposit": 0},
+        "lease_terms": ["12-month"],
+        "available_date": "2026-08-15",
+        "landlord_id": "landlord_boulevard",
+        "description": "Boutique cottage community 13-minute walk to campus and 8 minutes to downtown. Two resort pools on property, Peloton bikes, two-story clubhouse with fitness center. Brick paver parking, lush landscaping, private front porches and balconies, hardwood-like floors, chef kitchen with granite counters. Cottage, manor house, flat, and row house layouts. Water and internet included. Furniture packages available. Poolside units available. Unique character and community feel.",
+        "tags": ["boutique-cottages", "two-pools", "peloton", "walkable-to-campus", "private-porches", "furniture-optional"],
+        "price_tier": "mid", "reputation_score": 4.3, "total_units": 128, "year_built": 2018,
+        "utilities_estimate_monthly": 100, "university": "auburn"
+    },
+    {
+        "property_id": "nestiq_020",
+        "name": "Atlas at Richland Road",
+        "address": "Richland Rd, Auburn, AL 36830",
+        "coordinates": {"type": "Point", "coordinates": [-85.4756, 32.6058]},
+        "distance_to_campus_miles": 1.1,
+        "walk_time_minutes": 22,
+        "drive_time_minutes": 4,
+        "tiger_transit": True,
+        "floor_plans": [
+            {"beds": 2, "baths": 2, "sqft": 787, "rent_per_person": 999, "available": True},
+            {"beds": 3, "baths": 2.5, "sqft": 1340, "rent_per_person": 699, "available": True},
+            {"beds": 3, "baths": 2.5, "sqft": 1724, "rent_per_person": 799, "available": True},
+            {"beds": 4, "baths": 3.5, "sqft": 1873, "rent_per_person": 799, "available": True}
+        ],
+        "amenities": {
+            "pool": True, "gym": True, "study_rooms": True, "in_unit_laundry": True,
+            "furnished": False, "pet_friendly": True, "parking": True, "balcony": True,
+            "dishwasher": True, "bbq_area": True, "sports_court": True, "shuttle": True,
+            "wifi_included": True, "utilities_included": True, "rooftop": False,
+            "coffee_lounge": True, "game_room": False, "hot_tub": True, "dog_park": True
+        },
+        "fees": {"pet_deposit": 0, "pet_monthly": 0, "application_fee": 0, "admin_fee": 0, "security_deposit": 0},
+        "lease_terms": ["12-month"],
+        "available_date": "2026-08-15",
+        "landlord_id": "landlord_atlas",
+        "description": "New Auburn community with basketball court, beach volleyball, pickleball courts, putting green, dog park with pet spa, resort pool and hot tub, 24-hour fitness center with yoga and pilates studio, coffee bar clubhouse, co-working rooms, and private shuttle service. Water, sewer, trash, cable, and internet all included in rent. Optional furniture packages. Townhome and duplex layouts at the lowest per-person price points. Strong amenity package for the price.",
+        "tags": ["pickleball", "putting-green", "utilities-included", "beach-volleyball", "townhome", "pet-spa", "shuttle"],
+        "price_tier": "mid", "reputation_score": 4.1, "total_units": 250, "year_built": 2023,
+        "utilities_estimate_monthly": 0, "university": "auburn"
+    },
+    {
+        "property_id": "nestiq_021",
+        "name": "Midtown Auburn",
+        "address": "375 N College St, Auburn, AL 36830",
+        "coordinates": {"type": "Point", "coordinates": [-85.4818, 32.6118]},
+        "distance_to_campus_miles": 0.5,
+        "walk_time_minutes": 10,
+        "drive_time_minutes": 2,
+        "tiger_transit": True,
+        "floor_plans": [
+            {"beds": 2, "baths": 2, "sqft": 900, "rent_per_person": 800, "available": True},
+            {"beds": 3, "baths": 3, "sqft": 1200, "rent_per_person": 750, "available": True},
+            {"beds": 4, "baths": 4, "sqft": 1450, "rent_per_person": 700, "available": True}
+        ],
+        "amenities": {
+            "pool": True, "gym": True, "study_rooms": False, "in_unit_laundry": True,
+            "furnished": True, "pet_friendly": True, "parking": True, "balcony": False,
+            "dishwasher": True, "bbq_area": False, "sports_court": False, "shuttle": True,
+            "wifi_included": True, "utilities_included": False, "rooftop": False,
+            "coffee_lounge": False, "game_room": False, "hot_tub": False, "dog_park": False
+        },
+        "fees": {"pet_deposit": 200, "pet_monthly": 40, "application_fee": 0, "admin_fee": 0, "security_deposit": 0},
+        "lease_terms": ["12-month"],
+        "available_date": "2026-08-15",
+        "landlord_id": "landlord_midtown",
+        "description": "Studio through 4-bedroom apartments and cottages on North College Street half mile from campus. Resort-style pool, quartz countertops, stainless appliances, and high-speed internet included. Cottage units available for a more private living experience. Good mix of location and price. Managed by Preiss Company alongside Logan Square and The Collective.",
+        "tags": ["north-college-st", "wifi-included", "cottages-available", "mid-range", "quartz-counters"],
+        "price_tier": "mid", "reputation_score": 4.0, "total_units": 200, "year_built": 2019,
+        "utilities_estimate_monthly": 100, "university": "auburn"
+    }
+]
+
+path = Path("data/seed/auburn_properties.json")
+path.write_text(json.dumps(properties, indent=2))
+print(f"Written {len(properties)} properties ({sum(1 for p in properties if p['property_id'].startswith('nestiq_0') and int(p['property_id'].split('_')[1]) <= 8)} existing + {sum(1 for p in properties if int(p['property_id'].split('_')[1]) > 8)} new)")
+print(f"File size: {path.stat().st_size:,} bytes")
+print(f"\nPrice range: ${min(min(fp['rent_per_person'] for fp in p['floor_plans']) for p in properties)}/person to ${max(max(fp['rent_per_person'] for fp in p['floor_plans']) for p in properties)}/person")
+print(f"Universities: {set(p['university'] for p in properties)}")
