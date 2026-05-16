@@ -24,6 +24,7 @@ from agents.analyst.agent import (
     get_market_velocity,
     generate_property_verdict,
 )
+from agents.scraper.agent import scrape_all_properties
 
 load_dotenv()
 
@@ -242,6 +243,30 @@ def get_shortlist(
         return {"success": False, "error": str(e)}
 
 
+# ── Scraper Tool ──────────────────────────────────────────────────────────────
+def refresh_all_property_pricing() -> dict[str, Any]:
+    """
+    Run the Autonomous Property Scraper to visit all 21 Auburn property websites
+    and update MongoDB with current pricing, availability, and move-in specials.
+    This demonstrates true autonomous agent behavior — the agent fetches real-time
+    data from live websites without human intervention.
+
+    Call this periodically (e.g., weekly) to keep Nestiq's data fresh.
+
+    Returns:
+        Summary of what was updated across all properties
+    """
+    try:
+        summary = scrape_all_properties()
+        return {
+            "success": True,
+            "message": f"Autonomous scraper complete. Updated {summary['updated']} properties.",
+            "summary": summary
+        }
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+
 # ── Agent Definition ──────────────────────────────────────────────────────────
 advisor_agent = Agent(
     model="gemini-2.5-flash",
@@ -322,6 +347,8 @@ You: [save_shortlisted_property] → Confirm saved, ask if they want to keep sea
         get_student_preferences,
         save_shortlisted_property,
         get_shortlist,
+        # Scraper tool (autonomous data collection)
+        refresh_all_property_pricing,
     ],
 )
 
