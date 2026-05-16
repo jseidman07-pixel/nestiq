@@ -1,18 +1,19 @@
 """
 Nestiq Autonomous Property Scraper Agent
-Uses Gemini 2.5 with Google Search grounding to visit apartment websites,
-extract real-time pricing, availability, and move-in specials.
+Uses Playwright to render JavaScript-heavy apartment websites,
+then Gemini to extract pricing, availability, and move-in specials.
 Autonomously updates MongoDB when data changes.
 """
 
 import os
 import json
-import requests
+import asyncio
 from datetime import datetime
 from typing import Any
 from dotenv import load_dotenv
 from pymongo import MongoClient
 from google import genai
+from playwright.async_api import async_playwright
 
 load_dotenv()
 
@@ -35,8 +36,8 @@ PROPERTY_WEBSITES = {
     "nestiq_006": ("Shelton Mill Townhomes", "sheltonmillapartments.com"),
     "nestiq_007": ("1322 North Apartments", "1322north.com"),
     "nestiq_008": ("Lakewood Commons", "lakewoodcommonsauburn.com"),
-    "nestiq_009": ("Heritage Terrace", ""),  # Manual lookup needed
-    "nestiq_010": ("Old Row at The Balcony", ""),  # Manual lookup needed
+    "nestiq_009": ("Heritage Terrace", ""),
+    "nestiq_010": ("Old Row at The Balcony", ""),
     "nestiq_011": ("The Standard at Auburn", "standardatauburn.com"),
     "nestiq_012": ("Samford Square", "samfordsquare.com"),
     "nestiq_013": ("The Union Auburn", "theunionauburn.com"),
@@ -51,7 +52,7 @@ PROPERTY_WEBSITES = {
 }
 
 EXTRACTION_PROMPT = """
-You are a real estate data extraction specialist. Visit the apartment website and extract ONLY the following information in valid JSON format. Be precise — do not invent data.
+You are a real estate data extraction specialist. Analyze this apartment website content and extract ONLY the following information in valid JSON format. Be precise — do not invent data.
 
 If information is not found on the website, use null. Return ONLY this JSON structure, no other text:
 
@@ -80,13 +81,14 @@ If information is not found on the website, use null. Return ONLY this JSON stru
 """
 
 
-def scrape_property_website(
+async def scrape_property_website(
     property_id: str,
     property_name: str,
     website_url: str,
 ) -> dict[str, Any]:
     """
-    Fetch a property website and use Gemini to extract pricing, availability, and specials.
+    Use Playwright to render a property website (handles JavaScript),
+    then Gemini to extract pricing, availability, and specials.
     Returns extracted data and whether the property has changes.
     """
     if not website_url:
@@ -98,104 +100,112 @@ def scrape_property_website(
         }
 
     try:
-        # Fetch the website content
-        headers = {
-            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36'
-        }
-        response = requests.get(f"https://{website_url}", headers=headers, timeout=10)
-        response.raise_for_status()
-        website_content = response.text[:8000]  # Limit to first 8KB to stay under token limits
+        async with async_playwright() as p:
+            # Launch browser and fetch the website
+            browser = await p.chromium.launch(headless=True)
+            page = await browser.new_page()
+            page.set_default_timeout(30000)
 
-        # Use Gemini to analyze the website content
-        prompt = f"""
-Analyze this website content for {property_name} and extract current apartment information.
+            # Use 'domcontentloaded' instead of 'networkidle' for faster loading
+            # Some apartment sites have continuous network activity (analytics, ads)
+            await page.goto(f"https://{website_url}", wait_until="domcontentloaded")
+
+            # Get the full rendered HTML (JavaScript executed)
+            rendered_html = await page.content()
+            await browser.close()
+
+            # Limit to first 12KB to stay under token limits
+            rendered_html = rendered_html[:12000]
+
+            # Use Gemini to analyze the rendered page
+            prompt = f"""
+Analyze this rendered website for {property_name} and extract current apartment pricing and availability.
 
 WEBSITE CONTENT:
-{website_content}
+{rendered_html}
 
 {EXTRACTION_PROMPT}
 """
-        genai_response = _genai.models.generate_content(
-            model="gemini-2.5-flash",
-            contents=prompt,
-        )
-
-        # Parse the response
-        response_text = genai_response.text.strip()
-
-        # Try to extract JSON from the response
-        try:
-            # If response starts with ```json, extract it
-            if "```json" in response_text:
-                json_str = response_text.split("```json")[1].split("```")[0].strip()
-            elif "```" in response_text:
-                json_str = response_text.split("```")[1].split("```")[0].strip()
-            else:
-                json_str = response_text
-
-            extracted_data = json.loads(json_str)
-        except json.JSONDecodeError:
-            return {
-                "property_id": property_id,
-                "status": "error",
-                "reason": "failed to parse response as JSON",
-                "raw_response": response_text[:500],
-                "timestamp": datetime.utcnow().isoformat(),
-            }
-
-        # Get current property data from MongoDB
-        current_property = _db.properties.find_one({"property_id": property_id})
-        if not current_property:
-            return {
-                "property_id": property_id,
-                "status": "error",
-                "reason": "property not found in MongoDB",
-                "timestamp": datetime.utcnow().isoformat(),
-            }
-
-        # Compare and detect changes
-        changes = _detect_changes(current_property, extracted_data)
-
-        # Update MongoDB if there are changes
-        if changes["has_changes"]:
-            update_doc = {
-                "pricing_updated": extracted_data.get("pricing"),
-                "available_now": extracted_data.get("available_now"),
-                "available_date": extracted_data.get("available_date"),
-                "move_in_specials": extracted_data.get("move_in_specials", []),
-                "lease_terms_available": extracted_data.get("lease_terms", []),
-                "waitlist_status": extracted_data.get("waitlist_status"),
-                "last_scraped_at": datetime.utcnow().isoformat(),
-            }
-
-            _db.properties.update_one(
-                {"property_id": property_id},
-                {"$set": update_doc}
+            response = _genai.models.generate_content(
+                model="gemini-2.5-flash",
+                contents=prompt,
             )
 
-            # Log the change
-            _db.property_updates.insert_one({
-                "property_id": property_id,
-                "property_name": property_name,
-                "website": website_url,
-                "timestamp": datetime.utcnow().isoformat(),
-                "changes": changes["details"],
-                "extracted_data": extracted_data,
-            })
+            # Parse the response
+            response_text = response.text.strip()
 
-            return {
-                "property_id": property_id,
-                "status": "updated",
-                "changes": changes["details"],
-                "new_data": extracted_data,
-                "timestamp": datetime.utcnow().isoformat(),
-            }
-        else:
-            return {
-                "property_id": property_id,
-                "status": "no_changes",
-                "timestamp": datetime.utcnow().isoformat(),
-            }
+            # Try to extract JSON from the response
+            try:
+                if "```json" in response_text:
+                    json_str = response_text.split("```json")[1].split("```")[0].strip()
+                elif "```" in response_text:
+                    json_str = response_text.split("```")[1].split("```")[0].strip()
+                else:
+                    json_str = response_text
+
+                extracted_data = json.loads(json_str)
+            except json.JSONDecodeError:
+                return {
+                    "property_id": property_id,
+                    "status": "error",
+                    "reason": "failed to parse response as JSON",
+                    "raw_response": response_text[:500],
+                    "timestamp": datetime.utcnow().isoformat(),
+                }
+
+            # Get current property data from MongoDB
+            current_property = _db.properties.find_one({"property_id": property_id})
+            if not current_property:
+                return {
+                    "property_id": property_id,
+                    "status": "error",
+                    "reason": "property not found in MongoDB",
+                    "timestamp": datetime.utcnow().isoformat(),
+                }
+
+            # Compare and detect changes
+            changes = _detect_changes(current_property, extracted_data)
+
+            # Update MongoDB if there are changes
+            if changes["has_changes"]:
+                update_doc = {
+                    "pricing_updated": extracted_data.get("pricing"),
+                    "available_now": extracted_data.get("available_now"),
+                    "available_date": extracted_data.get("available_date"),
+                    "move_in_specials": extracted_data.get("move_in_specials", []),
+                    "lease_terms_available": extracted_data.get("lease_terms", []),
+                    "waitlist_status": extracted_data.get("waitlist_status"),
+                    "last_scraped_at": datetime.utcnow().isoformat(),
+                }
+
+                _db.properties.update_one(
+                    {"property_id": property_id},
+                    {"$set": update_doc}
+                )
+
+                # Log the change
+                _db.property_updates.insert_one({
+                    "property_id": property_id,
+                    "property_name": property_name,
+                    "website": website_url,
+                    "timestamp": datetime.utcnow().isoformat(),
+                    "changes": changes["details"],
+                    "extracted_data": extracted_data,
+                })
+
+                return {
+                    "property_id": property_id,
+                    "status": "updated",
+                    "changes": changes["details"],
+                    "new_data": extracted_data,
+                    "timestamp": datetime.utcnow().isoformat(),
+                }
+            else:
+                return {
+                    "property_id": property_id,
+                    "status": "no_changes",
+                    "timestamp": datetime.utcnow().isoformat(),
+                }
 
     except Exception as e:
         return {
@@ -270,7 +280,7 @@ def _detect_changes(current: dict, new_data: dict) -> dict[str, Any]:
     }
 
 
-def scrape_all_properties() -> dict[str, Any]:
+async def scrape_all_properties() -> dict[str, Any]:
     """
     Run the autonomous scraper on all 21 Auburn properties.
     Returns summary of what was updated.
@@ -286,7 +296,7 @@ def scrape_all_properties() -> dict[str, Any]:
     }
 
     for property_id, (property_name, website_url) in PROPERTY_WEBSITES.items():
-        result = scrape_property_website(property_id, property_name, website_url)
+        result = await scrape_property_website(property_id, property_name, website_url)
         results["details"].append(result)
 
         if result["status"] == "updated":
@@ -302,6 +312,5 @@ def scrape_all_properties() -> dict[str, Any]:
 
 
 if __name__ == "__main__":
-    # Run scraper on all properties
-    summary = scrape_all_properties()
+    summary = asyncio.run(scrape_all_properties())
     print(json.dumps(summary, indent=2))

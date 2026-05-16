@@ -251,13 +251,16 @@ def refresh_all_property_pricing() -> dict[str, Any]:
     This demonstrates true autonomous agent behavior — the agent fetches real-time
     data from live websites without human intervention.
 
+    Uses Playwright to render JavaScript and Gemini to extract data.
+
     Call this periodically (e.g., weekly) to keep Nestiq's data fresh.
 
     Returns:
         Summary of what was updated across all properties
     """
     try:
-        summary = scrape_all_properties()
+        import asyncio
+        summary = asyncio.run(scrape_all_properties())
         return {
             "success": True,
             "message": f"Autonomous scraper complete. Updated {summary['updated']} properties.",
