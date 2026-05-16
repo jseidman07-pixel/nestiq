@@ -299,6 +299,11 @@ input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 16p
             <div class="section-title">Negotiation Tips</div>
             <div class="negotiation-list" id="negotiationList"></div>
           </div>
+          <div id="reviewsSection" style="display:none;flex-direction:column;gap:10px;">
+    <div class="section-title">What Students Say</div>
+    <div id="reviewsSummaryBar" style="background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:12px;font-family:var(--mono);font-size:10px;line-height:1.8;color:var(--text2);"></div>
+    <div id="reviewsList" style="display:flex;flex-direction:column;gap:8px;"></div>
+</div>
         </div>
       </div>
 
@@ -523,6 +528,26 @@ async function selectProperty(pid) {
     document.getElementById('roommateSlider').value = 2;
     document.getElementById('roommateCount').textContent = 2;
     updateRoommates(2);
+    // Load reviews
+    fetch(`${API}/reviews/${pid}`)
+      .then(r => r.json())
+      .then(data => {
+        if (!data.count) return;
+        const s = data.summary;
+        const scoreColor = s.overall === 'positive' ? 'var(--green)' : s.overall === 'negative' ? 'var(--red)' : 'var(--yellow)';
+        document.getElementById('reviewsSummaryBar').innerHTML = `
+          <span style="color:${scoreColor};font-weight:500">${s.overall.toUpperCase()}</span> — ${s.avg_rating}★ avg from ${s.count} real student reviews<br>
+          ${s.top_red_flags?.length ? `<span style="color:var(--red)">⚠ ${s.top_red_flags.slice(0,2).join(' · ')}</span><br>` : ''}
+          ${s.top_green_flags?.length ? `<span style="color:var(--green)">✓ ${s.top_green_flags.slice(0,2).join(' · ')}</span>` : ''}
+        `;
+        document.getElementById('reviewsList').innerHTML = data.reviews.slice(0,3).map(r => `
+          <div style="background:var(--surface2);border:1px solid var(--border);border-left:3px solid ${r.sentiment==='positive'?'var(--green)':r.sentiment==='negative'?'var(--red)':'var(--yellow)'};border-radius:4px;padding:10px 12px;">
+            <div style="font-family:var(--mono);font-size:8px;color:var(--text3);margin-bottom:4px;">${r.source} · ${r.author} · ${r.rating}★</div>
+            <div style="font-size:12px;color:var(--text2);line-height:1.5;">"${r.text.substring(0,200)}${r.text.length>200?'...':''}"</div>
+          </div>
+        `).join('');
+        document.getElementById('reviewsSection').style.display = 'flex';
+      }).catch(() => {});
 
   } catch (err) {
     document.getElementById('verdictWord').textContent = 'ERR';
