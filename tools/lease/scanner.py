@@ -139,7 +139,7 @@ def analyze_lease_pdf(
                     data=pdf_bytes,
                     mime_type="application/pdf",
                 ),
-                types.Part.from_text(LEASE_ANALYSIS_PROMPT),
+                types.Part.from_text(text=LEASE_ANALYSIS_PROMPT),
             ],
         )
 

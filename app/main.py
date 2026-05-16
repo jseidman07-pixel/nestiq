@@ -1,8 +1,9 @@
 
-from fastapi import FastAPI
+from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import Optional
+import base64
 import sys
 import os
 
@@ -10,6 +11,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from tools.underwriting import analyze_deal
 from tools.mongodb_client import save_underwriting_result
+from tools.lease.scanner import analyze_lease_pdf, get_lease_history
 from tools.deal_history import (
     list_recent_saved_deals,
     find_saved_deals_by_verdict,
@@ -79,3 +81,30 @@ def deals_by_verdict(verdict: str, limit: int = 10):
 def best_deal(metric: str = "cash_on_cash_return"):
     deal = get_best_saved_deal(metric=metric)
     return {"metric": metric, "best_deal": deal}
+
+@app.post("/scan-lease")
+async def scan_lease(file: UploadFile = File(...)):
+    """
+    Upload and analyze a student lease PDF.
+    Returns lease red flags, risky clauses, and a plain-English summary.
+    """
+    if not file.filename.lower().endswith(".pdf"):
+        raise HTTPException(status_code=400, detail="Only PDF files are supported")
+
+    contents = await file.read()
+    pdf_base64 = base64.b64encode(contents).decode("utf-8")
+
+    result = analyze_lease_pdf(
+        pdf_base64=pdf_base64,
+        filename=file.filename,
+    )
+
+    return result
+
+
+@app.get("/lease-history")
+def lease_history():
+    """
+    Return saved lease scan history from MongoDB.
+    """
+    return get_lease_history()
