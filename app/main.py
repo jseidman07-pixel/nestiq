@@ -1,5 +1,7 @@
 
 from fastapi import FastAPI, UploadFile, File, HTTPException
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import Optional
@@ -23,6 +25,12 @@ app = FastAPI(
     description="AI-powered real estate investment analysis agent",
     version="1.0.0",
 )
+
+app.mount("/static", StaticFiles(directory="app/static"), name="static")
+
+@app.get("/ui")
+def serve_ui():
+    return FileResponse("app/static/index.html")
 
 app.add_middleware(
     CORSMiddleware,
@@ -108,3 +116,57 @@ def lease_history():
     Return saved lease scan history from MongoDB.
     """
     return get_lease_history()
+
+
+class ChatRequest(BaseModel):
+    message: str
+    user_id: str = "default_user"
+
+@app.post("/chat")
+async def chat(request: ChatRequest):
+    from agents.scout.agent import search_properties_by_filters, search_properties_by_description, search_properties_near_campus
+    import re
+    msg = request.message.lower()
+    budget_match = re.search(r"\$?(\d{3,4})", request.message)
+    budget = int(budget_match.group(1)) if budget_match else 900
+    roommate_match = re.search(r"(\d+)\s*(roommate|friend|person|people)", msg)
+    roommates = int(roommate_match.group(1)) + 1 if roommate_match else 1
+    pet = any(w in msg for w in ["pet", "dog", "cat"])
+    furnished = "furnish" in msg
+    walking = any(w in msg for w in ["walk", "walking distance"])
+    if walking:
+        result = search_properties_near_campus(max_walk_minutes=15, roommates=roommates, max_rent_per_person=budget)
+    elif any(w in msg for w in ["cozy", "quiet", "vibe", "luxury", "premium"]):
+        result = search_properties_by_description(query=request.message, roommates=roommates, max_rent_per_person=budget, pet_friendly=pet, furnished=furnished)
+    else:
+        result = search_properties_by_filters(roommates=roommates, max_rent_per_person=budget, pet_friendly=pet, furnished=furnished)
+    props = result.get("properties", [])
+    if not props:
+        response_text = "No properties matched. Try increasing your budget or relaxing filters."
+    else:
+        lines = [f"Found **{len(props)} properties** matching your criteria:\n"]
+        for p in props[:4]:
+            lines.append(f"**{p['name']}** — ${p['rent_per_person']}/person · {p['distance_to_campus_miles']}mi · {p['reputation_score']}★")
+        lines.append("\nClick any property card to see the full analysis.")
+        response_text = "\n".join(lines)
+    return {"response": response_text, "properties": props[:6]}
+
+@app.get("/analyze/verdict")
+def analyze_verdict(property_id: str, roommates: int = 2, budget: int = 800, priorities: str = "balanced"):
+    from agents.analyst.agent import generate_property_verdict
+    return generate_property_verdict(property_id=property_id, roommates=roommates, budget_per_person=budget, priorities=priorities)
+
+@app.get("/analyze/cost")
+def analyze_cost(property_id: str, roommates: int = 2, has_pet: bool = False):
+    from agents.analyst.agent import calculate_true_cost
+    return calculate_true_cost(property_id=property_id, roommates=roommates, has_pet=has_pet)
+
+@app.get("/analyze/roommates")
+def analyze_roommates(property_id: str, planned_roommates: int = 2):
+    from agents.analyst.agent import analyze_roommate_scenarios
+    return analyze_roommate_scenarios(property_id=property_id, planned_roommates=planned_roommates)
+
+@app.get("/analyze/reputation")
+def analyze_reputation(property_id: str):
+    from agents.analyst.agent import analyze_landlord_reputation
+    return analyze_landlord_reputation(property_id=property_id)

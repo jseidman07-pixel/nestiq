@@ -3,615 +3,629 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Nestiq — Real Estate Investment Agent</title>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<title>Nestiq — Auburn Housing Intelligence</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=IBM+Plex+Mono:wght@300;400;500&family=IBM+Plex+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg: #080c0f;
-    --surface: #0e1419;
-    --surface2: #151d24;
-    --border: #1e2d38;
-    --accent: #00d4ff;
-    --buy: #00e676;
-    --negotiate: #ffb300;
-    --walk: #ff3d5a;
-    --text: #e8edf2;
-    --muted: #5a7a8a;
-    --mono: 'DM Mono', monospace;
-  }
-
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'DM Sans', sans-serif;
-    min-height: 100vh;
-    background-image:
-      radial-gradient(ellipse at 20% 0%, rgba(0,212,255,0.04) 0%, transparent 60%),
-      radial-gradient(ellipse at 80% 100%, rgba(0,230,118,0.03) 0%, transparent 60%);
-  }
-
-  /* ── HEADER ── */
-  header {
-    border-bottom: 1px solid var(--border);
-    padding: 20px 40px;
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    position: sticky;
-    top: 0;
-    background: rgba(8,12,15,0.92);
-    backdrop-filter: blur(12px);
-    z-index: 100;
-  }
-
-  .logo {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 28px;
-    letter-spacing: 0.08em;
-    color: var(--accent);
-  }
-
-  .logo-tag {
-    font-family: var(--mono);
-    font-size: 10px;
-    color: var(--muted);
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    border: 1px solid var(--border);
-    padding: 3px 8px;
-    border-radius: 3px;
-  }
-
-  .status-dot {
-    width: 6px; height: 6px;
-    background: var(--buy);
-    border-radius: 50%;
-    margin-left: auto;
-    box-shadow: 0 0 8px var(--buy);
-    animation: pulse 2s infinite;
-  }
-
-  @keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.4; }
-  }
-
-  .status-text {
-    font-family: var(--mono);
-    font-size: 11px;
-    color: var(--muted);
-  }
-
-  /* ── LAYOUT ── */
-  main {
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 48px 40px;
-    display: grid;
-    grid-template-columns: 1fr 420px;
-    gap: 32px;
-    align-items: start;
-  }
-
-  /* ── FORM PANEL ── */
-  .panel {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    overflow: hidden;
-  }
-
-  .panel-header {
-    padding: 20px 24px;
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-
-  .panel-title {
-    font-family: var(--mono);
-    font-size: 11px;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: var(--muted);
-  }
-
-  .panel-icon {
-    width: 6px; height: 6px;
-    background: var(--accent);
-    border-radius: 50%;
-  }
-
-  .form-grid {
-    padding: 24px;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-  }
-
-  .form-group {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-  }
-
-  .form-group.full {
-    grid-column: 1 / -1;
-  }
-
-  label {
-    font-family: var(--mono);
-    font-size: 10px;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--muted);
-  }
-
-  input {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    padding: 10px 14px;
-    color: var(--text);
-    font-family: var(--mono);
-    font-size: 13px;
-    transition: border-color 0.2s;
-    width: 100%;
-  }
-
-  input:focus {
-    outline: none;
-    border-color: var(--accent);
-    box-shadow: 0 0 0 3px rgba(0,212,255,0.08);
-  }
-
-  input::placeholder { color: var(--muted); }
-
-  .submit-btn {
-    margin: 0 24px 24px;
-    width: calc(100% - 48px);
-    padding: 14px;
-    background: var(--accent);
-    color: #000;
-    border: none;
-    border-radius: 6px;
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 18px;
-    letter-spacing: 0.1em;
-    cursor: pointer;
-    transition: all 0.2s;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .submit-btn:hover {
-    background: #33ddff;
-    transform: translateY(-1px);
-    box-shadow: 0 8px 24px rgba(0,212,255,0.3);
-  }
-
-  .submit-btn:active { transform: translateY(0); }
-
-  .submit-btn.loading {
-    background: var(--surface2);
-    color: var(--muted);
-    pointer-events: none;
-  }
-
-  /* ── RIGHT PANEL ── */
-  .right-col {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-  }
-
-  /* ── VERDICT CARD ── */
-  .verdict-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 28px;
-    display: none;
-    animation: slideIn 0.4s ease;
-  }
-
-  .verdict-card.visible { display: block; }
-
-  @keyframes slideIn {
-    from { opacity: 0; transform: translateY(12px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  .verdict-label {
-    font-family: var(--mono);
-    font-size: 10px;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-bottom: 12px;
-  }
-
-  .verdict-badge {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 56px;
-    letter-spacing: 0.05em;
-    line-height: 1;
-    margin-bottom: 20px;
-  }
-
-  .verdict-badge.BUY { color: var(--buy); text-shadow: 0 0 40px rgba(0,230,118,0.4); }
-  .verdict-badge.NEGOTIATE { color: var(--negotiate); text-shadow: 0 0 40px rgba(255,179,0,0.4); }
-  .verdict-badge.WALK { color: var(--walk); text-shadow: 0 0 40px rgba(255,61,90,0.4); }
-
-  .property-name-display {
-    font-size: 13px;
-    color: var(--muted);
-    margin-bottom: 24px;
-    font-family: var(--mono);
-  }
-
-  /* ── METRICS GRID ── */
-  .metrics-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-  }
-
-  .metric {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 14px;
-  }
-
-  .metric-label {
-    font-family: var(--mono);
-    font-size: 9px;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-bottom: 6px;
-  }
-
-  .metric-value {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 22px;
-    letter-spacing: 0.04em;
-    color: var(--text);
-  }
-
-  .metric-value.positive { color: var(--buy); }
-  .metric-value.negative { color: var(--walk); }
-  .metric-value.neutral { color: var(--negotiate); }
-
-  /* ── DEAL HISTORY ── */
-  .history-panel {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    overflow: hidden;
-  }
-
-  .history-list {
-    max-height: 320px;
-    overflow-y: auto;
-  }
-
-  .history-list::-webkit-scrollbar { width: 4px; }
-  .history-list::-webkit-scrollbar-track { background: transparent; }
-  .history-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
-
-  .history-item {
-    padding: 14px 20px;
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    transition: background 0.15s;
-    cursor: default;
-  }
-
-  .history-item:last-child { border-bottom: none; }
-  .history-item:hover { background: var(--surface2); }
-
-  .history-name {
-    font-size: 13px;
-    font-weight: 500;
-    margin-bottom: 3px;
-  }
-
-  .history-sub {
-    font-family: var(--mono);
-    font-size: 10px;
-    color: var(--muted);
-  }
-
-  .history-verdict {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 14px;
-    letter-spacing: 0.06em;
-    padding: 4px 10px;
-    border-radius: 4px;
-  }
-
-  .history-verdict.BUY {
-    background: rgba(0,230,118,0.12);
-    color: var(--buy);
-    border: 1px solid rgba(0,230,118,0.2);
-  }
-  .history-verdict.NEGOTIATE {
-    background: rgba(255,179,0,0.12);
-    color: var(--negotiate);
-    border: 1px solid rgba(255,179,0,0.2);
-  }
-  .history-verdict.WALK, .history-verdict.WALK\ AWAY {
-    background: rgba(255,61,90,0.12);
-    color: var(--walk);
-    border: 1px solid rgba(255,61,90,0.2);
-  }
-
-  .empty-state {
-    padding: 32px 20px;
-    text-align: center;
-    font-family: var(--mono);
-    font-size: 11px;
-    color: var(--muted);
-  }
-
-  /* ── ERROR ── */
-  .error-msg {
-    background: rgba(255,61,90,0.08);
-    border: 1px solid rgba(255,61,90,0.2);
-    border-radius: 8px;
-    padding: 14px 18px;
-    font-family: var(--mono);
-    font-size: 12px;
-    color: var(--walk);
-    display: none;
-  }
-
-  .error-msg.visible { display: block; }
-
-  /* ── RESPONSIVE ── */
-  @media (max-width: 800px) {
-    main {
-      grid-template-columns: 1fr;
-      padding: 24px 20px;
-    }
-    header { padding: 16px 20px; }
-  }
+:root {
+  --bg: #0d0d0b;
+  --surface: #141410;
+  --surface2: #1c1c17;
+  --surface3: #242420;
+  --border: #2a2a22;
+  --border2: #353530;
+  --gold: #c9a84c;
+  --gold2: #e8c96a;
+  --gold-dim: rgba(201,168,76,0.12);
+  --amber: #d47c2a;
+  --text: #e8e6dc;
+  --text2: #a8a498;
+  --text3: #6a6860;
+  --red: #e05252;
+  --red-dim: rgba(224,82,82,0.12);
+  --green: #52c49a;
+  --green-dim: rgba(82,196,154,0.12);
+  --yellow: #e8b84a;
+  --yellow-dim: rgba(232,184,74,0.12);
+  --blue: #5298e0;
+  --mono: 'IBM Plex Mono', monospace;
+  --sans: 'IBM Plex Sans', sans-serif;
+  --serif: 'Playfair Display', serif;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { height: 100%; overflow: hidden; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 14px;
+  line-height: 1.5;
+  display: flex;
+  flex-direction: column;
+}
+.header {
+  height: 52px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  gap: 16px;
+  flex-shrink: 0;
+  background: var(--surface);
+}
+.logo { font-family: var(--serif); font-size: 22px; font-weight: 900; color: var(--gold); letter-spacing: -0.02em; font-style: italic; }
+.logo-sub { font-family: var(--mono); font-size: 9px; color: var(--text3); letter-spacing: 0.2em; text-transform: uppercase; }
+.header-sep { flex: 1; }
+.header-pill { font-family: var(--mono); font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text3); border: 1px solid var(--border2); padding: 4px 10px; border-radius: 2px; }
+.status-indicator { display: flex; align-items: center; gap: 6px; font-family: var(--mono); font-size: 9px; color: var(--green); letter-spacing: 0.1em; }
+.status-dot { width: 5px; height: 5px; background: var(--green); border-radius: 50%; box-shadow: 0 0 6px var(--green); animation: blink 2s infinite; }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.4} }
+.app { flex: 1; display: grid; grid-template-columns: 300px 1fr 360px; overflow: hidden; }
+.panel-left { border-right: 1px solid var(--border); display: flex; flex-direction: column; overflow: hidden; }
+.panel-header { padding: 14px 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.panel-label { font-family: var(--mono); font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text3); }
+.panel-dot { width: 4px; height: 4px; background: var(--gold); border-radius: 50%; }
+.chat-messages { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 12px; scrollbar-width: thin; scrollbar-color: var(--border2) transparent; }
+.msg { display: flex; flex-direction: column; gap: 4px; animation: fadeUp 0.3s ease; }
+@keyframes fadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+.msg-role { font-family: var(--mono); font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text3); }
+.msg-user .msg-role { color: var(--gold); }
+.msg-bubble { background: var(--surface2); border: 1px solid var(--border); border-radius: 4px; padding: 10px 12px; font-size: 13px; line-height: 1.6; color: var(--text2); }
+.msg-user .msg-bubble { background: var(--gold-dim); border-color: rgba(201,168,76,0.2); color: var(--text); }
+.msg-agent .msg-bubble { color: var(--text); }
+.msg-bubble strong { color: var(--gold2); font-weight: 500; }
+.typing-indicator { display: flex; gap: 4px; padding: 10px 12px; background: var(--surface2); border: 1px solid var(--border); border-radius: 4px; width: fit-content; }
+.typing-dot { width: 5px; height: 5px; background: var(--gold); border-radius: 50%; animation: typingPulse 1.2s infinite; }
+.typing-dot:nth-child(2) { animation-delay: 0.2s; }
+.typing-dot:nth-child(3) { animation-delay: 0.4s; }
+@keyframes typingPulse { 0%,100% { opacity: 0.3; transform: scale(0.8); } 50% { opacity: 1; transform: scale(1); } }
+.chat-input-area { padding: 12px; border-top: 1px solid var(--border); flex-shrink: 0; }
+.chat-input-wrap { display: flex; gap: 8px; background: var(--surface2); border: 1px solid var(--border2); border-radius: 4px; padding: 8px 12px; transition: border-color 0.2s; }
+.chat-input-wrap:focus-within { border-color: var(--gold); box-shadow: 0 0 0 2px var(--gold-dim); }
+.chat-input { flex: 1; background: transparent; border: none; outline: none; color: var(--text); font-family: var(--sans); font-size: 13px; resize: none; min-height: 20px; max-height: 80px; }
+.chat-input::placeholder { color: var(--text3); }
+.send-btn { background: var(--gold); border: none; border-radius: 3px; width: 28px; height: 28px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: background 0.2s; align-self: flex-end; }
+.send-btn:hover { background: var(--gold2); }
+.send-btn svg { width: 12px; height: 12px; fill: var(--bg); }
+.quick-prompts { display: flex; flex-direction: column; gap: 4px; margin-top: 8px; }
+.quick-btn { background: transparent; border: 1px solid var(--border); border-radius: 3px; padding: 5px 10px; color: var(--text3); font-family: var(--mono); font-size: 9px; letter-spacing: 0.06em; cursor: pointer; text-align: left; transition: all 0.15s; }
+.quick-btn:hover { border-color: var(--gold); color: var(--gold); background: var(--gold-dim); }
+.panel-center { display: flex; flex-direction: column; overflow: hidden; border-right: 1px solid var(--border); }
+.properties-grid { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 14px; scrollbar-width: thin; scrollbar-color: var(--border2) transparent; }
+.empty-state { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; color: var(--text3); }
+.empty-icon { font-size: 48px; opacity: 0.3; }
+.empty-title { font-family: var(--serif); font-size: 20px; color: var(--text2); font-style: italic; }
+.empty-sub { font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-align: center; line-height: 1.8; }
+.property-card { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; cursor: pointer; transition: all 0.2s; animation: fadeUp 0.4s ease; }
+.property-card:hover { border-color: var(--gold); transform: translateY(-1px); box-shadow: 0 4px 20px rgba(0,0,0,0.4); }
+.property-card.selected { border-color: var(--gold); background: var(--surface2); }
+.card-top { padding: 16px 18px 12px; display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+.card-name { font-family: var(--serif); font-size: 17px; font-weight: 700; color: var(--text); line-height: 1.2; }
+.card-address { font-family: var(--mono); font-size: 9px; color: var(--text3); letter-spacing: 0.06em; margin-top: 3px; }
+.verdict-badge { font-family: var(--mono); font-size: 10px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; padding: 4px 10px; border-radius: 2px; flex-shrink: 0; }
+.verdict-badge.SIGN { background: var(--green-dim); color: var(--green); border: 1px solid rgba(82,196,154,0.3); }
+.verdict-badge.NEGOTIATE { background: var(--yellow-dim); color: var(--yellow); border: 1px solid rgba(232,184,74,0.3); }
+.verdict-badge.PASS { background: var(--red-dim); color: var(--red); border: 1px solid rgba(224,82,82,0.3); }
+.verdict-badge.PENDING { background: var(--surface3); color: var(--text3); border: 1px solid var(--border2); }
+.card-stats { display: grid; grid-template-columns: repeat(4, 1fr); border-top: 1px solid var(--border); }
+.stat { padding: 10px 14px; border-right: 1px solid var(--border); }
+.stat:last-child { border-right: none; }
+.stat-label { font-family: var(--mono); font-size: 8px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text3); margin-bottom: 3px; }
+.stat-value { font-family: var(--mono); font-size: 13px; font-weight: 500; color: var(--text); }
+.stat-value.good { color: var(--green); }
+.stat-value.warn { color: var(--yellow); }
+.stat-value.bad { color: var(--red); }
+.card-tags { padding: 8px 14px; display: flex; flex-wrap: wrap; gap: 4px; border-top: 1px solid var(--border); }
+.tag { font-family: var(--mono); font-size: 8px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text3); background: var(--surface3); border: 1px solid var(--border2); padding: 2px 6px; border-radius: 2px; }
+.tag.highlight { color: var(--gold); background: var(--gold-dim); border-color: rgba(201,168,76,0.2); }
+.panel-right { display: flex; flex-direction: column; overflow: hidden; }
+.panel-tabs { display: flex; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+.tab { flex: 1; padding: 12px 8px; font-family: var(--mono); font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text3); cursor: pointer; text-align: center; border-bottom: 2px solid transparent; transition: all 0.2s; background: none; border-top: none; border-left: none; border-right: none; }
+.tab:hover { color: var(--text2); }
+.tab.active { color: var(--gold); border-bottom-color: var(--gold); }
+.tab-content { flex: 1; overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--border2) transparent; }
+.tab-pane { display: none; padding: 20px; flex-direction: column; gap: 16px; }
+.tab-pane.active { display: flex; }
+.analysis-empty { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 200px; gap: 8px; color: var(--text3); text-align: center; }
+.analysis-empty .label { font-family: var(--mono); font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; }
+.section-title { font-family: var(--mono); font-size: 9px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text3); margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+.section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+.verdict-display { background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; padding: 20px; text-align: center; }
+.verdict-word { font-family: var(--serif); font-size: 42px; font-weight: 900; font-style: italic; line-height: 1; margin-bottom: 8px; }
+.verdict-word.SIGN { color: var(--green); }
+.verdict-word.NEGOTIATE { color: var(--yellow); }
+.verdict-word.PASS { color: var(--red); }
+.verdict-score { font-family: var(--mono); font-size: 11px; color: var(--text3); }
+.score-bars { display: flex; flex-direction: column; gap: 8px; }
+.score-row { display: flex; align-items: center; gap: 10px; }
+.score-row-label { font-family: var(--mono); font-size: 9px; letter-spacing: 0.08em; color: var(--text3); width: 80px; flex-shrink: 0; }
+.score-bar-bg { flex: 1; height: 4px; background: var(--surface3); border-radius: 2px; overflow: hidden; }
+.score-bar-fill { height: 100%; background: var(--gold); border-radius: 2px; transition: width 0.8s ease; }
+.score-bar-fill.low { background: var(--red); }
+.score-bar-fill.mid { background: var(--yellow); }
+.score-bar-fill.high { background: var(--green); }
+.score-num { font-family: var(--mono); font-size: 10px; color: var(--text2); width: 28px; text-align: right; }
+.cost-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.cost-item { background: var(--surface2); border: 1px solid var(--border); border-radius: 4px; padding: 10px 12px; }
+.cost-label { font-family: var(--mono); font-size: 8px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text3); margin-bottom: 4px; }
+.cost-value { font-family: var(--mono); font-size: 16px; font-weight: 500; color: var(--text); }
+.roommate-slider-wrap { background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; padding: 16px; }
+.roommate-count-display { font-family: var(--serif); font-size: 36px; font-weight: 700; font-style: italic; color: var(--gold); text-align: center; margin-bottom: 4px; }
+.roommate-count-label { font-family: var(--mono); font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text3); text-align: center; margin-bottom: 14px; }
+input[type="range"] { -webkit-appearance: none; width: 100%; height: 3px; background: var(--surface3); border-radius: 2px; outline: none; }
+input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; background: var(--gold); border-radius: 50%; cursor: pointer; box-shadow: 0 0 8px rgba(201,168,76,0.4); }
+.roommate-scenarios { display: flex; flex-direction: column; gap: 6px; margin-top: 14px; }
+.scenario-row { display: flex; align-items: center; justify-content: space-between; padding: 8px 10px; border-radius: 3px; border: 1px solid var(--border); font-family: var(--mono); font-size: 11px; transition: all 0.2s; }
+.scenario-row.current { border-color: var(--gold); background: var(--gold-dim); }
+.scenario-row.danger { border-color: rgba(224,82,82,0.3); }
+.scenario-people { color: var(--text2); }
+.scenario-cost { color: var(--text); font-weight: 500; }
+.scenario-status { font-size: 9px; }
+.scenario-status.ok { color: var(--green); }
+.scenario-status.warn { color: var(--yellow); }
+.scenario-status.bad { color: var(--red); }
+.lease-drop-zone { border: 2px dashed var(--border2); border-radius: 6px; padding: 32px 20px; text-align: center; cursor: pointer; transition: all 0.2s; position: relative; }
+.lease-drop-zone:hover, .lease-drop-zone.drag-over { border-color: var(--gold); background: var(--gold-dim); }
+.lease-drop-zone input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+.drop-icon { font-size: 28px; margin-bottom: 8px; opacity: 0.5; }
+.drop-title { font-family: var(--serif); font-size: 16px; font-style: italic; color: var(--text2); margin-bottom: 4px; }
+.drop-sub { font-family: var(--mono); font-size: 9px; letter-spacing: 0.1em; color: var(--text3); }
+.scan-progress { display: none; flex-direction: column; gap: 10px; }
+.scan-progress.visible { display: flex; }
+.progress-label { font-family: var(--mono); font-size: 10px; color: var(--gold); letter-spacing: 0.1em; animation: textPulse 1.5s infinite; }
+@keyframes textPulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
+.progress-bar-bg { height: 2px; background: var(--surface3); border-radius: 1px; overflow: hidden; }
+.progress-bar-fill { height: 100%; background: linear-gradient(90deg, var(--gold), var(--amber)); border-radius: 1px; animation: progressSweep 2s infinite; }
+@keyframes progressSweep { 0% { width: 0%; margin-left: 0; } 50% { width: 60%; margin-left: 20%; } 100% { width: 0%; margin-left: 100%; } }
+.flag-list { display: flex; flex-direction: column; gap: 8px; }
+.flag-item { background: var(--surface2); border: 1px solid var(--border); border-left: 3px solid var(--border); border-radius: 4px; padding: 12px; animation: fadeUp 0.4s ease; }
+.flag-item.HIGH { border-left-color: var(--red); }
+.flag-item.MEDIUM { border-left-color: var(--yellow); }
+.flag-item.LOW { border-left-color: var(--blue); }
+.flag-top { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+.flag-severity { font-family: var(--mono); font-size: 8px; letter-spacing: 0.1em; font-weight: 500; padding: 2px 6px; border-radius: 2px; }
+.flag-severity.HIGH { background: var(--red-dim); color: var(--red); }
+.flag-severity.MEDIUM { background: var(--yellow-dim); color: var(--yellow); }
+.flag-severity.LOW { background: rgba(82,152,224,0.12); color: var(--blue); }
+.flag-clause { font-family: var(--mono); font-size: 9px; color: var(--text3); }
+.flag-issue { font-size: 12px; color: var(--text); line-height: 1.5; margin-bottom: 6px; }
+.flag-quote { font-family: var(--mono); font-size: 10px; color: var(--text3); border-left: 2px solid var(--border2); padding-left: 8px; line-height: 1.6; font-style: italic; }
+.risk-score-display { background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; padding: 16px; display: flex; align-items: center; gap: 16px; }
+.risk-number { font-family: var(--serif); font-size: 48px; font-weight: 900; font-style: italic; line-height: 1; flex-shrink: 0; }
+.risk-number.low { color: var(--green); }
+.risk-number.med { color: var(--yellow); }
+.risk-number.high { color: var(--red); }
+.risk-details { flex: 1; }
+.risk-label { font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 4px; }
+.risk-label.low { color: var(--green); }
+.risk-label.med { color: var(--yellow); }
+.risk-label.high { color: var(--red); }
+.risk-summary-text { font-size: 12px; color: var(--text2); line-height: 1.5; }
+.negotiation-list { display: flex; flex-direction: column; gap: 6px; }
+.negotiation-item { display: flex; gap: 10px; padding: 10px; background: var(--surface2); border: 1px solid var(--border); border-radius: 4px; font-size: 12px; color: var(--text2); line-height: 1.5; animation: fadeUp 0.4s ease; }
+.negotiation-num { font-family: var(--mono); font-size: 9px; color: var(--gold); flex-shrink: 0; padding-top: 2px; }
+.hidden { display: none !important; }
 </style>
 </head>
 <body>
 
-<header>
+<header class="header">
   <div class="logo">Nestiq</div>
-  <div class="logo-tag">Investment Agent</div>
-  <div class="status-dot"></div>
-  <div class="status-text">API LIVE</div>
+  <div class="logo-sub">Auburn Housing Intelligence</div>
+  <div class="header-sep"></div>
+  <div class="header-pill">MongoDB Atlas</div>
+  <div class="header-pill">Gemini 2.5</div>
+  <div class="status-indicator"><div class="status-dot"></div>LIVE</div>
 </header>
 
-<main>
-  <!-- LEFT: FORM -->
-  <div>
-    <div class="panel">
-      <div class="panel-header">
-        <div class="panel-icon"></div>
-        <div class="panel-title">Analyze a Deal</div>
-      </div>
+<div class="app">
 
-      <div class="form-grid">
-        <div class="form-group full">
-          <label>Property Name</label>
-          <input type="text" id="property_name" placeholder="e.g. Auburn Duplex on Magnolia Ave" />
-        </div>
-        <div class="form-group">
-          <label>Purchase Price ($)</label>
-          <input type="number" id="purchase_price" placeholder="400000" />
-        </div>
-        <div class="form-group">
-          <label>Monthly Rent ($)</label>
-          <input type="number" id="monthly_rent" placeholder="3500" />
-        </div>
-        <div class="form-group">
-          <label>Annual Taxes ($)</label>
-          <input type="number" id="annual_taxes" placeholder="4200" />
-        </div>
-        <div class="form-group">
-          <label>Annual Insurance ($)</label>
-          <input type="number" id="annual_insurance" placeholder="2600" />
-        </div>
-        <div class="form-group">
-          <label>Interest Rate (%)</label>
-          <input type="number" id="interest_rate" placeholder="7" step="0.1" />
-        </div>
-        <div class="form-group">
-          <label>Down Payment (%)</label>
-          <input type="number" id="down_payment_percent" placeholder="25" />
-        </div>
-        <div class="form-group">
-          <label>Repair Budget ($)</label>
-          <input type="number" id="repair_budget" placeholder="10000" />
-        </div>
-        <div class="form-group">
-          <label>Closing Costs ($)</label>
-          <input type="number" id="closing_costs" placeholder="12000" />
-        </div>
-        <div class="form-group">
-          <label>Annual HOA ($)</label>
-          <input type="number" id="annual_hoa" placeholder="0" />
+  <!-- LEFT: CHAT -->
+  <div class="panel-left">
+    <div class="panel-header">
+      <div class="panel-dot"></div>
+      <div class="panel-label">Housing Advisor</div>
+    </div>
+    <div class="chat-messages" id="chatMessages">
+      <div class="msg msg-agent">
+        <div class="msg-role">Nestiq</div>
+        <div class="msg-bubble">
+          Welcome to Nestiq — Auburn's housing intelligence agent.<br><br>
+          Tell me what you're looking for: budget, roommates, must-haves. I'll find the right place and break down the real numbers.
         </div>
       </div>
-
-      <button class="submit-btn" id="analyzeBtn" onclick="analyzeDeal()">
-        Run Analysis
-      </button>
-
-      <div class="error-msg" id="errorMsg"></div>
+    </div>
+    <div class="chat-input-area">
+      <div class="chat-input-wrap">
+        <textarea class="chat-input" id="chatInput" placeholder="Describe what you need..." rows="1"></textarea>
+        <button class="send-btn" onclick="sendMessage()">
+          <svg viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2v7z"/></svg>
+        </button>
+      </div>
+      <div class="quick-prompts">
+        <button class="quick-btn" onclick="quickPrompt('Pet friendly 2BR under $750 per person walking distance to campus')">→ Pet friendly 2BR under $750, walking distance</button>
+        <button class="quick-btn" onclick="quickPrompt('Show me the cheapest furnished option near Auburn campus')">→ Cheapest furnished option near campus</button>
+        <button class="quick-btn" onclick="quickPrompt('Analyze The Grove at Auburn for 3 roommates with $700 budget')">→ Analyze The Grove for 3 roommates</button>
+        <button class="quick-btn" onclick="quickPrompt('What are my best options if I have a dog and $800 budget')">→ Dog-friendly under $800/person</button>
+      </div>
     </div>
   </div>
 
-  <!-- RIGHT: RESULTS + HISTORY -->
-  <div class="right-col">
-
-    <!-- VERDICT CARD -->
-    <div class="verdict-card" id="verdictCard">
-      <div class="verdict-label">Verdict</div>
-      <div class="verdict-badge" id="verdictBadge"></div>
-      <div class="property-name-display" id="propertyNameDisplay"></div>
-      <div class="metrics-grid" id="metricsGrid"></div>
+  <!-- CENTER: PROPERTIES -->
+  <div class="panel-center">
+    <div class="panel-header">
+      <div class="panel-dot"></div>
+      <div class="panel-label">Properties</div>
+      <div style="flex:1"></div>
+      <div class="panel-label" id="propertyCount" style="color:var(--text3)"></div>
     </div>
-
-    <!-- DEAL HISTORY -->
-    <div class="history-panel">
-      <div class="panel-header">
-        <div class="panel-icon"></div>
-        <div class="panel-title">Recent Deals</div>
-      </div>
-      <div class="history-list" id="historyList">
-        <div class="empty-state">No deals analyzed yet</div>
+    <div class="properties-grid" id="propertiesGrid">
+      <div class="empty-state">
+        <div class="empty-icon">⌂</div>
+        <div class="empty-title">No properties yet</div>
+        <div class="empty-sub">Use the advisor to search<br>Results appear here</div>
       </div>
     </div>
-
   </div>
-</main>
+
+  <!-- RIGHT: ANALYSIS -->
+  <div class="panel-right">
+    <div class="panel-tabs">
+      <button class="tab active" id="tab-btn-analysis" onclick="switchTab('analysis', this)">Analysis</button>
+      <button class="tab" id="tab-btn-roommate" onclick="switchTab('roommate', this)">Roommate</button>
+      <button class="tab" id="tab-btn-lease" onclick="switchTab('lease', this)">Lease DNA</button>
+    </div>
+    <div class="tab-content">
+
+      <!-- ANALYSIS -->
+      <div class="tab-pane active" id="tab-analysis">
+        <div class="analysis-empty" id="analysisEmpty">
+          <div style="font-size:24px;opacity:0.3">◎</div>
+          <div class="label">Click a property to analyze</div>
+        </div>
+        <div id="analysisContent" style="display:none;flex-direction:column;gap:16px;">
+          <div class="verdict-display">
+            <div class="verdict-word" id="verdictWord">—</div>
+            <div class="verdict-score" id="verdictScore"></div>
+          </div>
+          <div>
+            <div class="section-title">Score Breakdown</div>
+            <div class="score-bars" id="scoreBars"></div>
+          </div>
+          <div>
+            <div class="section-title">True Cost</div>
+            <div class="cost-grid" id="costGrid"></div>
+          </div>
+          <div>
+            <div class="section-title">Negotiation Tips</div>
+            <div class="negotiation-list" id="negotiationList"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ROOMMATE -->
+      <div class="tab-pane" id="tab-roommate">
+        <div class="analysis-empty" id="roommateEmpty">
+          <div style="font-size:24px;opacity:0.3">◑</div>
+          <div class="label">Select a property first</div>
+        </div>
+        <div id="roommateContent" style="display:none;flex-direction:column;gap:16px;">
+          <div class="roommate-slider-wrap">
+            <div class="roommate-count-display" id="roommateCount">2</div>
+            <div class="roommate-count-label">Roommates</div>
+            <input type="range" min="1" max="4" value="2" id="roommateSlider" oninput="updateRoommates(this.value)">
+            <div class="roommate-scenarios" id="roommateScenarios"></div>
+          </div>
+          <div>
+            <div class="section-title">Fragility Rating</div>
+            <div id="fragilityDisplay" style="background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:14px;font-family:var(--mono);font-size:11px;color:var(--text2);line-height:1.7;"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- LEASE DNA -->
+      <div class="tab-pane" id="tab-lease">
+        <div>
+          <div class="section-title">Lease DNA Scanner</div>
+          <p style="font-size:12px;color:var(--text2);line-height:1.6;margin-bottom:14px;">
+            Upload any lease PDF. Gemini reads every clause and surfaces the landmines before you sign.
+          </p>
+        </div>
+        <div class="lease-drop-zone" id="leaseDropZone">
+          <input type="file" accept=".pdf" id="leaseFile" onchange="scanLease(this)">
+          <div class="drop-icon">📄</div>
+          <div class="drop-title">Drop your lease here</div>
+          <div class="drop-sub">PDF only · Max 20MB · Analyzed by Gemini 2.5</div>
+        </div>
+        <div class="scan-progress" id="scanProgress">
+          <div class="progress-label" id="progressLabel">Reading lease document...</div>
+          <div class="progress-bar-bg"><div class="progress-bar-fill"></div></div>
+        </div>
+        <div id="leaseResults" style="display:none;flex-direction:column;gap:14px;">
+          <div>
+            <div class="section-title">Risk Score</div>
+            <div class="risk-score-display" id="riskScoreDisplay"></div>
+          </div>
+          <div>
+            <div class="section-title">Red Flags</div>
+            <div class="flag-list" id="flagList"></div>
+          </div>
+          <div>
+            <div class="section-title">Negotiation Leverage</div>
+            <div class="negotiation-list" id="leaseNegotiationList"></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
 
 <script>
-  const API = 'http://127.0.0.1:8000';
+const API = 'http://127.0.0.1:8000';
+let selectedPropertyId = null;
+let currentRoommates = 2;
 
-  async function analyzeDeal() {
-    const btn = document.getElementById('analyzeBtn');
-    const errorMsg = document.getElementById('errorMsg');
-    errorMsg.classList.remove('visible');
+function switchTab(name, btn) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('tab-' + name).classList.add('active');
+}
 
-    const payload = {
-      property_name: document.getElementById('property_name').value || 'Unnamed Property',
-      purchase_price: parseFloat(document.getElementById('purchase_price').value) || 0,
-      monthly_rent: parseFloat(document.getElementById('monthly_rent').value) || 0,
-      annual_taxes: parseFloat(document.getElementById('annual_taxes').value) || 0,
-      annual_insurance: parseFloat(document.getElementById('annual_insurance').value) || 0,
-      interest_rate: parseFloat(document.getElementById('interest_rate').value) || 7,
-      down_payment_percent: parseFloat(document.getElementById('down_payment_percent').value) || 25,
-      repair_budget: parseFloat(document.getElementById('repair_budget').value) || 0,
-      closing_costs: parseFloat(document.getElementById('closing_costs').value) || 0,
-      annual_hoa: parseFloat(document.getElementById('annual_hoa').value) || 0,
-    };
+function quickPrompt(text) {
+  document.getElementById('chatInput').value = text;
+  sendMessage();
+}
 
-    btn.textContent = 'Analyzing...';
-    btn.classList.add('loading');
+document.getElementById('chatInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+});
 
-    try {
-      const res = await fetch(`${API}/analyze-deal`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      });
+async function sendMessage() {
+  const input = document.getElementById('chatInput');
+  const text = input.value.trim();
+  if (!text) return;
+  input.value = '';
+  addMessage('user', text);
+  const typing = addTyping();
 
-      if (!res.ok) throw new Error(`API error: ${res.status}`);
-      const data = await res.json();
-      showVerdict(data);
-      loadHistory();
-    } catch (err) {
-      errorMsg.textContent = `Error: ${err.message}. Make sure the API server is running.`;
-      errorMsg.classList.add('visible');
-    } finally {
-      btn.textContent = 'Run Analysis';
-      btn.classList.remove('loading');
-    }
+  try {
+    const res = await fetch(`${API}/chat`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: text, user_id: 'default_user' })
+    });
+    typing.remove();
+    if (!res.ok) throw new Error('API error ' + res.status);
+    const data = await res.json();
+    addMessage('agent', data.response || 'No response.');
+    if (data.properties && data.properties.length > 0) renderProperties(data.properties);
+  } catch (err) {
+    typing.remove();
+    addMessage('agent', 'Could not reach the API. Make sure the server is running: <code>uvicorn app.main:app --reload</code>');
   }
+}
 
-  function showVerdict(data) {
-    const card = document.getElementById('verdictCard');
-    const badge = document.getElementById('verdictBadge');
-    const nameDisplay = document.getElementById('propertyNameDisplay');
-    const grid = document.getElementById('metricsGrid');
+function addMessage(role, text) {
+  const c = document.getElementById('chatMessages');
+  const d = document.createElement('div');
+  d.className = `msg msg-${role}`;
+  d.innerHTML = `<div class="msg-role">${role === 'user' ? 'You' : 'Nestiq'}</div><div class="msg-bubble">${fmt(text)}</div>`;
+  c.appendChild(d);
+  c.scrollTop = c.scrollHeight;
+  return d;
+}
 
-    const m = data.metrics;
-    const verdict = data.verdict;
-    const verdictClass = verdict === 'WALK AWAY' ? 'WALK' : verdict;
+function fmt(t) {
+  return t.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\n/g,'<br>');
+}
 
-    badge.textContent = verdict;
-    badge.className = `verdict-badge ${verdictClass}`;
-    nameDisplay.textContent = data.property_name;
+function addTyping() {
+  const c = document.getElementById('chatMessages');
+  const d = document.createElement('div');
+  d.className = 'msg msg-agent';
+  d.innerHTML = `<div class="msg-role">Nestiq</div><div class="typing-indicator"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div>`;
+  c.appendChild(d);
+  c.scrollTop = c.scrollHeight;
+  return d;
+}
 
-    const fmt = (n, prefix='$') => {
-      if (typeof n !== 'number') return '—';
-      return prefix + n.toLocaleString('en-US', {maximumFractionDigits: 0});
-    };
-    const pct = (n) => typeof n === 'number' ? (n * 100).toFixed(1) + '%' : '—';
-    const sign = (n) => n > 0 ? 'positive' : n < 0 ? 'negative' : 'neutral';
+function renderProperties(props) {
+  const grid = document.getElementById('propertiesGrid');
+  document.getElementById('propertyCount').textContent = `${props.length} found`;
+  grid.innerHTML = props.map(p => `
+    <div class="property-card" onclick="selectProperty('${p.property_id}')" id="card-${p.property_id}">
+      <div class="card-top">
+        <div>
+          <div class="card-name">${p.name}</div>
+          <div class="card-address">${p.address || ''}</div>
+        </div>
+        <div class="verdict-badge PENDING">Analyze →</div>
+      </div>
+      <div class="card-stats">
+        <div class="stat"><div class="stat-label">Rent/Person</div><div class="stat-value">$${p.rent_per_person || '—'}</div></div>
+        <div class="stat"><div class="stat-label">Distance</div><div class="stat-value ${p.distance_to_campus_miles <= 0.5 ? 'good' : p.distance_to_campus_miles <= 1.0 ? 'warn' : ''}">${p.distance_to_campus_miles}mi</div></div>
+        <div class="stat"><div class="stat-label">Rating</div><div class="stat-value ${p.reputation_score >= 4.5 ? 'good' : p.reputation_score >= 4.0 ? 'warn' : 'bad'}">${p.reputation_score}★</div></div>
+        <div class="stat"><div class="stat-label">Walk</div><div class="stat-value">${p.walk_time_minutes}min</div></div>
+      </div>
+      <div class="card-tags">
+        ${p.pet_friendly ? '<div class="tag highlight">🐾 Pet OK</div>' : ''}
+        ${p.furnished ? '<div class="tag highlight">Furnished</div>' : ''}
+        ${p.tiger_transit ? '<div class="tag highlight">Tiger Transit</div>' : ''}
+        ${p.pool ? '<div class="tag">Pool</div>' : ''}
+        ${p.gym ? '<div class="tag">Gym</div>' : ''}
+        ${p.wifi_included ? '<div class="tag highlight">WiFi incl.</div>' : ''}
+      </div>
+    </div>
+  `).join('');
+}
 
-    grid.innerHTML = `
-      <div class="metric">
-        <div class="metric-label">Monthly Cash Flow</div>
-        <div class="metric-value ${sign(m.monthly_cash_flow)}">${fmt(m.monthly_cash_flow)}</div>
-      </div>
-      <div class="metric">
-        <div class="metric-label">Cap Rate</div>
-        <div class="metric-value">${pct(m.cap_rate)}</div>
-      </div>
-      <div class="metric">
-        <div class="metric-label">Cash-on-Cash</div>
-        <div class="metric-value ${sign(m.cash_on_cash_return)}">${pct(m.cash_on_cash_return)}</div>
-      </div>
-      <div class="metric">
-        <div class="metric-label">DSCR</div>
-        <div class="metric-value ${m.dscr >= 1.2 ? 'positive' : m.dscr >= 1.0 ? 'neutral' : 'negative'}">${typeof m.dscr === 'number' ? m.dscr.toFixed(2) : '—'}</div>
-      </div>
-      <div class="metric">
-        <div class="metric-label">NOI</div>
-        <div class="metric-value">${fmt(m.noi)}</div>
-      </div>
-      <div class="metric">
-        <div class="metric-label">Cash Invested</div>
-        <div class="metric-value">${fmt(m.total_cash_invested)}</div>
-      </div>
+async function selectProperty(pid) {
+  selectedPropertyId = pid;
+  document.querySelectorAll('.property-card').forEach(c => c.classList.remove('selected'));
+  document.getElementById(`card-${pid}`)?.classList.add('selected');
+
+  // Switch to analysis tab
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+  document.getElementById('tab-btn-analysis').classList.add('active');
+  document.getElementById('tab-analysis').classList.add('active');
+
+  document.getElementById('analysisEmpty').style.display = 'none';
+  document.getElementById('analysisContent').style.display = 'flex';
+  document.getElementById('verdictWord').textContent = '...';
+  document.getElementById('verdictScore').textContent = 'Analyzing...';
+  document.getElementById('scoreBars').innerHTML = '';
+  document.getElementById('costGrid').innerHTML = '';
+  document.getElementById('negotiationList').innerHTML = '';
+
+  try {
+    const [vRes, cRes] = await Promise.all([
+      fetch(`${API}/analyze/verdict?property_id=${pid}&roommates=2&budget=800&priorities=balanced`),
+      fetch(`${API}/analyze/cost?property_id=${pid}&roommates=2`),
+    ]);
+    const verdict = await vRes.json();
+    const cost = await cRes.json();
+
+    const v = verdict.verdict || 'PASS';
+    const vEl = document.getElementById('verdictWord');
+    vEl.textContent = v;
+    vEl.className = `verdict-word ${v}`;
+    document.getElementById('verdictScore').textContent = `Score: ${verdict.overall_score || 0}/100 · ${verdict.budget_fit || ''}`;
+
+    const card = document.getElementById(`card-${pid}`);
+    if (card) { const b = card.querySelector('.verdict-badge'); b.textContent = v; b.className = `verdict-badge ${v}`; }
+
+    const scores = verdict.score_breakdown || {};
+    const labels = { value: 'Value', location: 'Location', amenities: 'Amenities', reputation: 'Reputation' };
+    document.getElementById('scoreBars').innerHTML = Object.entries(labels).map(([k, l]) => {
+      const s = scores[k] || 0;
+      const cls = s >= 70 ? 'high' : s >= 45 ? 'mid' : 'low';
+      return `<div class="score-row"><div class="score-row-label">${l}</div><div class="score-bar-bg"><div class="score-bar-fill ${cls}" style="width:${s}%"></div></div><div class="score-num">${s}</div></div>`;
+    }).join('');
+
+    const cb = cost.cost_breakdown || {};
+    document.getElementById('costGrid').innerHTML = `
+      <div class="cost-item"><div class="cost-label">Monthly Rent</div><div class="cost-value">$${cb.monthly_rent_per_person || 0}</div></div>
+      <div class="cost-item"><div class="cost-label">+ Utilities</div><div class="cost-value">$${cb.monthly_utilities_estimate || 0}</div></div>
+      <div class="cost-item"><div class="cost-label">True Monthly</div><div class="cost-value" style="color:var(--gold)">$${cb.monthly_total_per_person || 0}</div></div>
+      <div class="cost-item"><div class="cost-label">Move-In</div><div class="cost-value">$${cost.move_in_costs?.total_move_in || 0}</div></div>
     `;
 
-    card.classList.add('visible');
-    card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    const tips = verdict.negotiation_tips || [];
+    document.getElementById('negotiationList').innerHTML = tips.length
+      ? tips.map((t,i) => `<div class="negotiation-item"><div class="negotiation-num">0${i+1}</div><div>${t}</div></div>`).join('')
+      : '<div style="font-family:var(--mono);font-size:10px;color:var(--text3)">Strong value — no negotiation needed.</div>';
+
+    // Setup roommate tab
+    document.getElementById('roommateEmpty').style.display = 'none';
+    document.getElementById('roommateContent').style.display = 'flex';
+    document.getElementById('roommateSlider').value = 2;
+    document.getElementById('roommateCount').textContent = 2;
+    updateRoommates(2);
+
+  } catch (err) {
+    document.getElementById('verdictWord').textContent = 'ERR';
+    document.getElementById('verdictScore').textContent = 'Analysis failed — check API connection';
   }
+}
 
-  async function loadHistory() {
-    try {
-      const res = await fetch(`${API}/deals/recent?limit=8`);
-      const data = await res.json();
-      const list = document.getElementById('historyList');
+async function updateRoommates(count) {
+  count = parseInt(count);
+  currentRoommates = count;
+  document.getElementById('roommateCount').textContent = count;
+  if (!selectedPropertyId) return;
+  try {
+    const res = await fetch(`${API}/analyze/roommates?property_id=${selectedPropertyId}&planned_roommates=${count}`);
+    const data = await res.json();
+    const scenarios = data.scenarios || [];
+    document.getElementById('roommateScenarios').innerHTML = scenarios.map(s => `
+      <div class="scenario-row ${s.roommates === count ? 'current' : ''} ${!s.affordable ? 'danger' : ''}">
+        <div class="scenario-people">${s.roommates} person${s.roommates > 1 ? 's' : ''}</div>
+        <div class="scenario-cost">$${Math.round(s.rent_per_person)}/mo</div>
+        <div class="scenario-status ${s.affordable ? 'ok' : 'bad'}">${s.status}</div>
+      </div>
+    `).join('');
+    document.getElementById('fragilityDisplay').innerHTML = `
+      <span style="color:var(--gold);font-weight:500">${data.fragility_rating || '—'}</span><br>
+      ${data.fragility_score || ''}<br>${data.fragility_note || ''}<br><br>
+      <span style="color:var(--text3)">${data.recommendation || ''}</span>
+    `;
+  } catch (e) { console.error(e); }
+}
 
-      if (!data.deals || data.deals.length === 0) {
-        list.innerHTML = '<div class="empty-state">No deals analyzed yet</div>';
-        return;
-      }
+async function scanLease(input) {
+  const file = input.files[0];
+  if (!file) return;
 
-      list.innerHTML = data.deals.map(deal => {
-        const verdict = deal.verdict || '—';
-        const verdictClass = verdict === 'WALK AWAY' ? 'WALK AWAY' : verdict;
-        const cashFlow = deal.monthly_cash_flow;
-        const cfStr = typeof cashFlow === 'number'
-          ? '$' + Math.abs(cashFlow).toLocaleString('en-US', {maximumFractionDigits: 0})
-          : '—';
-        const cfSign = typeof cashFlow === 'number' && cashFlow < 0 ? '-' : '+';
+  // Switch to lease tab
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+  document.getElementById('tab-btn-lease').classList.add('active');
+  document.getElementById('tab-lease').classList.add('active');
 
-        return `
-          <div class="history-item">
-            <div>
-              <div class="history-name">${deal.property_name || 'Unnamed'}</div>
-              <div class="history-sub">${cfSign}${cfStr}/mo · Cap ${deal.cap_rate ? (deal.cap_rate * 100).toFixed(1) + '%' : '—'}</div>
-            </div>
-            <div class="history-verdict ${verdictClass}">${verdict}</div>
+  document.getElementById('leaseDropZone').style.display = 'none';
+  document.getElementById('scanProgress').classList.add('visible');
+  document.getElementById('leaseResults').style.display = 'none';
+
+  const labels = ['Reading lease document...','Identifying clauses...','Checking red flags...','Comparing to Auburn standards...','Generating report...'];
+  let li = 0;
+  const interval = setInterval(() => { li = (li+1) % labels.length; document.getElementById('progressLabel').textContent = labels[li]; }, 1800);
+
+  try {
+    const fd = new FormData();
+    fd.append('file', file);
+    const res = await fetch(`${API}/scan-lease`, { method: 'POST', body: fd });
+    clearInterval(interval);
+    document.getElementById('scanProgress').classList.remove('visible');
+    if (!res.ok) throw new Error('Scan failed');
+    const data = await res.json();
+    if (!data.success) throw new Error(data.error || 'Failed');
+    renderLeaseResults(data);
+  } catch (err) {
+    clearInterval(interval);
+    document.getElementById('scanProgress').classList.remove('visible');
+    document.getElementById('leaseDropZone').style.display = 'block';
+    addMessage('agent', `Lease scan failed: ${err.message}`);
+  }
+}
+
+function renderLeaseResults(data) {
+  const a = data.analysis;
+  const rs = data.risk_score || 0;
+  const rc = rs >= 70 ? 'high' : rs >= 40 ? 'med' : 'low';
+  const rl = rs >= 70 ? 'HIGH RISK' : rs >= 40 ? 'MODERATE RISK' : 'LOW RISK';
+
+  document.getElementById('riskScoreDisplay').innerHTML = `
+    <div class="risk-number ${rc}">${rs}</div>
+    <div class="risk-details">
+      <div class="risk-label ${rc}">${rl}</div>
+      <div class="risk-summary-text">${a.risk_summary || ''}</div>
+    </div>
+  `;
+
+  const flags = a.red_flags || [];
+  document.getElementById('flagList').innerHTML = flags.length
+    ? flags.map((f,i) => `
+        <div class="flag-item ${f.severity}" style="animation-delay:${i*0.1}s">
+          <div class="flag-top">
+            <div class="flag-severity ${f.severity}">${f.severity}</div>
+            <div class="flag-clause">${f.clause || ''}</div>
           </div>
-        `;
-      }).join('');
-    } catch (err) {
-      console.error('History load failed:', err);
-    }
-  }
+          <div class="flag-issue">${f.issue}</div>
+          ${f.exact_language ? `<div class="flag-quote">"${f.exact_language.substring(0,180)}${f.exact_language.length > 180 ? '...' : ''}"</div>` : ''}
+        </div>
+      `).join('')
+    : '<div style="font-family:var(--mono);font-size:10px;color:var(--green)">No major red flags found.</div>';
 
-  // Load history on page load
-  loadHistory();
+  const tips = a.negotiation_opportunities || [];
+  document.getElementById('leaseNegotiationList').innerHTML = tips.slice(0,5).map((t,i) => `
+    <div class="negotiation-item"><div class="negotiation-num">0${i+1}</div><div>${t}</div></div>
+  `).join('');
+
+  document.getElementById('leaseResults').style.display = 'flex';
+  addMessage('agent', `**Lease scan complete.** Risk score: **${rs}/100** — ${rl}. Found **${data.red_flag_count} red flags** (${data.high_risk_count} high severity). Check the Lease DNA tab for the full breakdown.`);
+}
 </script>
 </body>
 </html>
