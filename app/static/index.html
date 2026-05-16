@@ -16,6 +16,7 @@
   --gold: #c9a84c;
   --gold2: #e8c96a;
   --gold-dim: rgba(201,168,76,0.12);
+  --gold-glow: rgba(201,168,76,0.25);
   --amber: #d47c2a;
   --text: #e8e6dc;
   --text2: #a8a498;
@@ -42,6 +43,260 @@ body {
   display: flex;
   flex-direction: column;
 }
+
+/* ── ONBOARDING OVERLAY ─────────────────────────────────────────────────── */
+#onboarding {
+  position: fixed;
+  inset: 0;
+  background: var(--bg);
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+#onboarding.exit {
+  opacity: 0;
+  transform: translateY(-20px);
+  pointer-events: none;
+}
+
+/* Animated background grain */
+#onboarding::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events: none;
+}
+
+/* Gold corner accents */
+#onboarding::after {
+  content: '';
+  position: absolute;
+  top: 40px;
+  left: 40px;
+  width: 60px;
+  height: 60px;
+  border-top: 1px solid var(--gold);
+  border-left: 1px solid var(--gold);
+  opacity: 0.4;
+}
+
+.ob-corner-br {
+  position: absolute;
+  bottom: 40px;
+  right: 40px;
+  width: 60px;
+  height: 60px;
+  border-bottom: 1px solid var(--gold);
+  border-right: 1px solid var(--gold);
+  opacity: 0.4;
+}
+
+.ob-logo {
+  font-family: var(--serif);
+  font-size: 48px;
+  font-weight: 900;
+  font-style: italic;
+  color: var(--gold);
+  letter-spacing: -0.03em;
+  margin-bottom: 8px;
+  animation: fadeUp 0.8s ease forwards;
+}
+
+.ob-tagline {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--text3);
+  margin-bottom: 64px;
+  animation: fadeUp 0.8s 0.15s ease both;
+}
+
+.ob-step {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 32px;
+  max-width: 560px;
+  width: 100%;
+  padding: 0 24px;
+}
+
+.ob-step.active {
+  display: flex;
+  animation: fadeUp 0.5s ease forwards;
+}
+
+.ob-question {
+  font-family: var(--serif);
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text);
+  text-align: center;
+  line-height: 1.3;
+}
+
+.ob-question span {
+  color: var(--gold);
+  font-style: italic;
+}
+
+.ob-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  width: 100%;
+}
+
+.ob-option {
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: 8px;
+  padding: 18px 20px;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: left;
+  position: relative;
+  overflow: hidden;
+}
+
+.ob-option::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--gold-dim);
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.ob-option:hover { border-color: var(--gold); transform: translateY(-2px); }
+.ob-option:hover::before { opacity: 1; }
+
+.ob-option.selected {
+  border-color: var(--gold);
+  background: var(--surface2);
+}
+
+.ob-option.selected::before { opacity: 1; }
+
+.ob-option-icon {
+  font-size: 22px;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.ob-option-label {
+  font-family: var(--serif);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 3px;
+}
+
+.ob-option-sub {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.06em;
+  color: var(--text3);
+}
+
+.ob-progress {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.ob-progress-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--border2);
+  transition: all 0.3s;
+}
+
+.ob-progress-dot.active { background: var(--gold); box-shadow: 0 0 8px var(--gold); }
+.ob-progress-dot.done { background: var(--gold); opacity: 0.5; }
+
+.ob-next {
+  background: var(--gold);
+  border: none;
+  border-radius: 4px;
+  padding: 12px 32px;
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--bg);
+  cursor: pointer;
+  transition: all 0.2s;
+  display: none;
+}
+
+.ob-next.visible { display: block; animation: fadeUp 0.3s ease forwards; }
+.ob-next:hover { background: var(--gold2); transform: translateY(-1px); }
+
+.ob-launching {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.ob-launching.active { display: flex; animation: fadeUp 0.4s ease forwards; }
+
+.ob-launching-title {
+  font-family: var(--serif);
+  font-size: 24px;
+  font-style: italic;
+  color: var(--gold);
+}
+
+.ob-launching-sub {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  color: var(--text3);
+  text-transform: uppercase;
+}
+
+.ob-progress-bar {
+  width: 200px;
+  height: 2px;
+  background: var(--border2);
+  border-radius: 1px;
+  overflow: hidden;
+}
+
+.ob-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--gold), var(--amber));
+  border-radius: 1px;
+  width: 0%;
+  transition: width 1.5s ease;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ── MAIN APP ────────────────────────────────────────────────────────────── */
+#mainApp {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+
+#mainApp.visible { opacity: 1; }
+
 .header {
   height: 52px;
   border-bottom: 1px solid var(--border);
@@ -52,6 +307,7 @@ body {
   flex-shrink: 0;
   background: var(--surface);
 }
+
 .logo { font-family: var(--serif); font-size: 22px; font-weight: 900; color: var(--gold); letter-spacing: -0.02em; font-style: italic; }
 .logo-sub { font-family: var(--mono); font-size: 9px; color: var(--text3); letter-spacing: 0.2em; text-transform: uppercase; }
 .header-sep { flex: 1; }
@@ -59,6 +315,52 @@ body {
 .status-indicator { display: flex; align-items: center; gap: 6px; font-family: var(--mono); font-size: 9px; color: var(--green); letter-spacing: 0.1em; }
 .status-dot { width: 5px; height: 5px; background: var(--green); border-radius: 50%; box-shadow: 0 0 6px var(--green); animation: blink 2s infinite; }
 @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+/* User preferences bar */
+.prefs-bar {
+  background: var(--surface2);
+  border-bottom: 1px solid var(--border);
+  padding: 8px 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.pref-tag {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  color: var(--gold);
+  background: var(--gold-dim);
+  border: 1px solid rgba(201,168,76,0.2);
+  padding: 3px 8px;
+  border-radius: 2px;
+}
+
+.pref-label {
+  font-family: var(--mono);
+  font-size: 9px;
+  color: var(--text3);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.prefs-edit {
+  margin-left: auto;
+  font-family: var(--mono);
+  font-size: 9px;
+  color: var(--text3);
+  cursor: pointer;
+  letter-spacing: 0.08em;
+  background: none;
+  border: none;
+  padding: 0;
+  transition: color 0.2s;
+}
+
+.prefs-edit:hover { color: var(--gold); }
+
 .app { flex: 1; display: grid; grid-template-columns: 300px 1fr 360px; overflow: hidden; }
 .panel-left { border-right: 1px solid var(--border); display: flex; flex-direction: column; overflow: hidden; }
 .panel-header { padding: 14px 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
@@ -66,7 +368,6 @@ body {
 .panel-dot { width: 4px; height: 4px; background: var(--gold); border-radius: 50%; }
 .chat-messages { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 12px; scrollbar-width: thin; scrollbar-color: var(--border2) transparent; }
 .msg { display: flex; flex-direction: column; gap: 4px; animation: fadeUp 0.3s ease; }
-@keyframes fadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 .msg-role { font-family: var(--mono); font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text3); }
 .msg-user .msg-role { color: var(--gold); }
 .msg-bubble { background: var(--surface2); border: 1px solid var(--border); border-radius: 4px; padding: 10px 12px; font-size: 13px; line-height: 1.6; color: var(--text2); }
@@ -164,7 +465,7 @@ input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 16p
 .scenario-status.warn { color: var(--yellow); }
 .scenario-status.bad { color: var(--red); }
 .lease-drop-zone { border: 2px dashed var(--border2); border-radius: 6px; padding: 32px 20px; text-align: center; cursor: pointer; transition: all 0.2s; position: relative; }
-.lease-drop-zone:hover, .lease-drop-zone.drag-over { border-color: var(--gold); background: var(--gold-dim); }
+.lease-drop-zone:hover { border-color: var(--gold); background: var(--gold-dim); }
 .lease-drop-zone input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
 .drop-icon { font-size: 28px; margin-bottom: 8px; opacity: 0.5; }
 .drop-title { font-family: var(--serif); font-size: 16px; font-style: italic; color: var(--text2); margin-bottom: 4px; }
@@ -203,164 +504,265 @@ input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 16p
 .negotiation-list { display: flex; flex-direction: column; gap: 6px; }
 .negotiation-item { display: flex; gap: 10px; padding: 10px; background: var(--surface2); border: 1px solid var(--border); border-radius: 4px; font-size: 12px; color: var(--text2); line-height: 1.5; animation: fadeUp 0.4s ease; }
 .negotiation-num { font-family: var(--mono); font-size: 9px; color: var(--gold); flex-shrink: 0; padding-top: 2px; }
-.hidden { display: none !important; }
 </style>
 </head>
 <body>
 
-<header class="header">
-  <div class="logo">Nestiq</div>
-  <div class="logo-sub">Auburn Housing Intelligence</div>
-  <div class="header-sep"></div>
-  <div class="header-pill">MongoDB Atlas</div>
-  <div class="header-pill">Gemini 2.5</div>
-  <div class="status-indicator"><div class="status-dot"></div>LIVE</div>
-</header>
+<!-- ── ONBOARDING ─────────────────────────────────────────────────────────── -->
+<div id="onboarding">
+  <div class="ob-corner-br"></div>
 
-<div class="app">
+  <div class="ob-logo">Nestiq</div>
+  <div class="ob-tagline">Auburn Housing Intelligence</div>
 
-  <!-- LEFT: CHAT -->
-  <div class="panel-left">
-    <div class="panel-header">
-      <div class="panel-dot"></div>
-      <div class="panel-label">Housing Advisor</div>
-    </div>
-    <div class="chat-messages" id="chatMessages">
-      <div class="msg msg-agent">
-        <div class="msg-role">Nestiq</div>
-        <div class="msg-bubble">
-          Welcome to Nestiq — Auburn's housing intelligence agent.<br><br>
-          Tell me what you're looking for: budget, roommates, must-haves. I'll find the right place and break down the real numbers.
-        </div>
-      </div>
-    </div>
-    <div class="chat-input-area">
-      <div class="chat-input-wrap">
-        <textarea class="chat-input" id="chatInput" placeholder="Describe what you need..." rows="1"></textarea>
-        <button class="send-btn" onclick="sendMessage()">
-          <svg viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2v7z"/></svg>
-        </button>
-      </div>
-      <div class="quick-prompts">
-        <button class="quick-btn" onclick="quickPrompt('Pet friendly 2BR under $750 per person walking distance to campus')">→ Pet friendly 2BR under $750, walking distance</button>
-        <button class="quick-btn" onclick="quickPrompt('Show me the cheapest furnished option near Auburn campus')">→ Cheapest furnished option near campus</button>
-        <button class="quick-btn" onclick="quickPrompt('Analyze The Grove at Auburn for 3 roommates with $700 budget')">→ Analyze The Grove for 3 roommates</button>
-        <button class="quick-btn" onclick="quickPrompt('What are my best options if I have a dog and $800 budget')">→ Dog-friendly under $800/person</button>
-      </div>
-    </div>
+  <div class="ob-progress" id="obProgress">
+    <div class="ob-progress-dot active" id="dot0"></div>
+    <div class="ob-progress-dot" id="dot1"></div>
+    <div class="ob-progress-dot" id="dot2"></div>
   </div>
 
-  <!-- CENTER: PROPERTIES -->
-  <div class="panel-center">
-    <div class="panel-header">
-      <div class="panel-dot"></div>
-      <div class="panel-label">Properties</div>
-      <div style="flex:1"></div>
-      <div class="panel-label" id="propertyCount" style="color:var(--text3)"></div>
-    </div>
-    <div class="properties-grid" id="propertiesGrid">
-      <div class="empty-state">
-        <div class="empty-icon">⌂</div>
-        <div class="empty-title">No properties yet</div>
-        <div class="empty-sub">Use the advisor to search<br>Results appear here</div>
+  <!-- Step 1: Move-in -->
+  <div class="ob-step active" id="step0">
+    <div class="ob-question">When do you need to <span>move in?</span></div>
+    <div class="ob-options">
+      <div class="ob-option" onclick="selectOption(0, 'move_in', 'Fall 2026', this)">
+        <span class="ob-option-icon">🍂</span>
+        <div class="ob-option-label">Fall 2026</div>
+        <div class="ob-option-sub">August move-in</div>
+      </div>
+      <div class="ob-option" onclick="selectOption(0, 'move_in', 'Spring 2027', this)">
+        <span class="ob-option-icon">🌸</span>
+        <div class="ob-option-label">Spring 2027</div>
+        <div class="ob-option-sub">January move-in</div>
+      </div>
+      <div class="ob-option" onclick="selectOption(0, 'move_in', 'Summer 2026', this)">
+        <span class="ob-option-icon">☀️</span>
+        <div class="ob-option-label">Summer 2026</div>
+        <div class="ob-option-sub">May/June move-in</div>
+      </div>
+      <div class="ob-option" onclick="selectOption(0, 'move_in', 'Flexible', this)">
+        <span class="ob-option-icon">📅</span>
+        <div class="ob-option-label">Flexible</div>
+        <div class="ob-option-sub">No set date yet</div>
       </div>
     </div>
+    <button class="ob-next" id="next0" onclick="nextStep(1)">Continue →</button>
   </div>
 
-  <!-- RIGHT: ANALYSIS -->
-  <div class="panel-right">
-    <div class="panel-tabs">
-      <button class="tab active" id="tab-btn-analysis" onclick="switchTab('analysis', this)">Analysis</button>
-      <button class="tab" id="tab-btn-roommate" onclick="switchTab('roommate', this)">Roommate</button>
-      <button class="tab" id="tab-btn-lease" onclick="switchTab('lease', this)">Lease DNA</button>
+  <!-- Step 2: Roommates -->
+  <div class="ob-step" id="step1">
+    <div class="ob-question">How many people are you <span>living with?</span></div>
+    <div class="ob-options">
+      <div class="ob-option" onclick="selectOption(1, 'roommates', 1, this)">
+        <span class="ob-option-icon">🧍</span>
+        <div class="ob-option-label">Just me</div>
+        <div class="ob-option-sub">Solo — studio or 1BR</div>
+      </div>
+      <div class="ob-option" onclick="selectOption(1, 'roommates', 2, this)">
+        <span class="ob-option-icon">👥</span>
+        <div class="ob-option-label">2 people</div>
+        <div class="ob-option-sub">Me + 1 roommate</div>
+      </div>
+      <div class="ob-option" onclick="selectOption(1, 'roommates', 3, this)">
+        <span class="ob-option-icon">👨‍👩‍👦</span>
+        <div class="ob-option-label">3 people</div>
+        <div class="ob-option-sub">Me + 2 roommates</div>
+      </div>
+      <div class="ob-option" onclick="selectOption(1, 'roommates', 4, this)">
+        <span class="ob-option-icon">🏠</span>
+        <div class="ob-option-label">4+ people</div>
+        <div class="ob-option-sub">Full group situation</div>
+      </div>
     </div>
-    <div class="tab-content">
+    <button class="ob-next" id="next1" onclick="nextStep(2)">Continue →</button>
+  </div>
 
-      <!-- ANALYSIS -->
-      <div class="tab-pane active" id="tab-analysis">
-        <div class="analysis-empty" id="analysisEmpty">
-          <div style="font-size:24px;opacity:0.3">◎</div>
-          <div class="label">Click a property to analyze</div>
-        </div>
-        <div id="analysisContent" style="display:none;flex-direction:column;gap:16px;">
-          <div class="verdict-display">
-            <div class="verdict-word" id="verdictWord">—</div>
-            <div class="verdict-score" id="verdictScore"></div>
-          </div>
-          <div>
-            <div class="section-title">Score Breakdown</div>
-            <div class="score-bars" id="scoreBars"></div>
-          </div>
-          <div>
-            <div class="section-title">True Cost</div>
-            <div class="cost-grid" id="costGrid"></div>
-          </div>
-          <div>
-            <div class="section-title">Negotiation Tips</div>
-            <div class="negotiation-list" id="negotiationList"></div>
-          </div>
-          <div id="reviewsSection" style="display:none;flex-direction:column;gap:10px;">
-    <div class="section-title">What Students Say</div>
-    <div id="reviewsSummaryBar" style="background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:12px;font-family:var(--mono);font-size:10px;line-height:1.8;color:var(--text2);"></div>
-    <div id="reviewsList" style="display:flex;flex-direction:column;gap:8px;"></div>
+  <!-- Step 3: Priority -->
+  <div class="ob-step" id="step2">
+    <div class="ob-question">What matters <span>most to you?</span></div>
+    <div class="ob-options">
+      <div class="ob-option" onclick="selectOption(2, 'priority', 'location', this)">
+        <span class="ob-option-icon">📍</span>
+        <div class="ob-option-label">Location</div>
+        <div class="ob-option-sub">Close to campus above all</div>
+      </div>
+      <div class="ob-option" onclick="selectOption(2, 'priority', 'price', this)">
+        <span class="ob-option-icon">💰</span>
+        <div class="ob-option-label">Price</div>
+        <div class="ob-option-sub">Lowest cost per person</div>
+      </div>
+      <div class="ob-option" onclick="selectOption(2, 'priority', 'amenities', this)">
+        <span class="ob-option-icon">🏊</span>
+        <div class="ob-option-label">Amenities</div>
+        <div class="ob-option-sub">Pool, gym, furnished</div>
+      </div>
+      <div class="ob-option" onclick="selectOption(2, 'priority', 'balanced', this)">
+        <span class="ob-option-icon">⚖️</span>
+        <div class="ob-option-label">Balanced</div>
+        <div class="ob-option-sub">Best overall value</div>
+      </div>
+    </div>
+    <button class="ob-next" id="next2" onclick="launchApp()">Find My Home →</button>
+  </div>
+
+  <!-- Launching screen -->
+  <div class="ob-launching" id="obLaunching">
+    <div class="ob-launching-title">Finding your perfect match...</div>
+    <div class="ob-launching-sub">Searching 21 Auburn properties</div>
+    <div class="ob-progress-bar">
+      <div class="ob-progress-fill" id="launchFill"></div>
+    </div>
+  </div>
 </div>
+
+<!-- ── MAIN APP ────────────────────────────────────────────────────────────── -->
+<div id="mainApp">
+  <header class="header">
+    <div class="logo">Nestiq</div>
+    <div class="logo-sub">Auburn Housing Intelligence</div>
+    <div class="header-sep"></div>
+    <div class="header-pill">MongoDB Atlas</div>
+    <div class="header-pill">Gemini 2.5</div>
+    <div class="status-indicator"><div class="status-dot"></div>LIVE</div>
+  </header>
+
+  <!-- User preferences bar -->
+  <div class="prefs-bar" id="prefsBar" style="display:none;">
+    <div class="pref-label">Your search</div>
+    <div class="pref-tag" id="prefMoveIn"></div>
+    <div class="pref-tag" id="prefRoommates"></div>
+    <div class="pref-tag" id="prefPriority"></div>
+    <button class="prefs-edit" onclick="resetOnboarding()">✦ Update preferences</button>
+  </div>
+
+  <div class="app">
+    <!-- LEFT: CHAT -->
+    <div class="panel-left">
+      <div class="panel-header">
+        <div class="panel-dot"></div>
+        <div class="panel-label">Housing Advisor</div>
+      </div>
+      <div class="chat-messages" id="chatMessages"></div>
+      <div class="chat-input-area">
+        <div class="chat-input-wrap">
+          <textarea class="chat-input" id="chatInput" placeholder="Ask anything about Auburn housing..." rows="1"></textarea>
+          <button class="send-btn" onclick="sendMessage()">
+            <svg viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2v7z"/></svg>
+          </button>
+        </div>
+        <div class="quick-prompts" id="quickPrompts"></div>
+      </div>
+    </div>
+
+    <!-- CENTER: PROPERTIES -->
+    <div class="panel-center">
+      <div class="panel-header">
+        <div class="panel-dot"></div>
+        <div class="panel-label">Properties</div>
+        <div style="flex:1"></div>
+        <div class="panel-label" id="propertyCount" style="color:var(--text3)"></div>
+      </div>
+      <div class="properties-grid" id="propertiesGrid">
+        <div class="empty-state">
+          <div class="empty-icon">⌂</div>
+          <div class="empty-title">Searching for you...</div>
+          <div class="empty-sub">Finding properties that match<br>your preferences</div>
         </div>
       </div>
+    </div>
 
-      <!-- ROOMMATE -->
-      <div class="tab-pane" id="tab-roommate">
-        <div class="analysis-empty" id="roommateEmpty">
-          <div style="font-size:24px;opacity:0.3">◑</div>
-          <div class="label">Select a property first</div>
-        </div>
-        <div id="roommateContent" style="display:none;flex-direction:column;gap:16px;">
-          <div class="roommate-slider-wrap">
-            <div class="roommate-count-display" id="roommateCount">2</div>
-            <div class="roommate-count-label">Roommates</div>
-            <input type="range" min="1" max="4" value="2" id="roommateSlider" oninput="updateRoommates(this.value)">
-            <div class="roommate-scenarios" id="roommateScenarios"></div>
-          </div>
-          <div>
-            <div class="section-title">Fragility Rating</div>
-            <div id="fragilityDisplay" style="background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:14px;font-family:var(--mono);font-size:11px;color:var(--text2);line-height:1.7;"></div>
-          </div>
-        </div>
+    <!-- RIGHT: ANALYSIS -->
+    <div class="panel-right">
+      <div class="panel-tabs">
+        <button class="tab active" id="tab-btn-analysis" onclick="switchTab('analysis', this)">Analysis</button>
+        <button class="tab" id="tab-btn-roommate" onclick="switchTab('roommate', this)">Roommate</button>
+        <button class="tab" id="tab-btn-lease" onclick="switchTab('lease', this)">Lease DNA</button>
       </div>
+      <div class="tab-content">
 
-      <!-- LEASE DNA -->
-      <div class="tab-pane" id="tab-lease">
-        <div>
-          <div class="section-title">Lease DNA Scanner</div>
-          <p style="font-size:12px;color:var(--text2);line-height:1.6;margin-bottom:14px;">
-            Upload any lease PDF. Gemini reads every clause and surfaces the landmines before you sign.
-          </p>
-        </div>
-        <div class="lease-drop-zone" id="leaseDropZone">
-          <input type="file" accept=".pdf" id="leaseFile" onchange="scanLease(this)">
-          <div class="drop-icon">📄</div>
-          <div class="drop-title">Drop your lease here</div>
-          <div class="drop-sub">PDF only · Max 20MB · Analyzed by Gemini 2.5</div>
-        </div>
-        <div class="scan-progress" id="scanProgress">
-          <div class="progress-label" id="progressLabel">Reading lease document...</div>
-          <div class="progress-bar-bg"><div class="progress-bar-fill"></div></div>
-        </div>
-        <div id="leaseResults" style="display:none;flex-direction:column;gap:14px;">
-          <div>
-            <div class="section-title">Risk Score</div>
-            <div class="risk-score-display" id="riskScoreDisplay"></div>
+        <div class="tab-pane active" id="tab-analysis">
+          <div class="analysis-empty" id="analysisEmpty">
+            <div style="font-size:24px;opacity:0.3">◎</div>
+            <div class="label">Click a property to analyze</div>
           </div>
-          <div>
-            <div class="section-title">Red Flags</div>
-            <div class="flag-list" id="flagList"></div>
-          </div>
-          <div>
-            <div class="section-title">Negotiation Leverage</div>
-            <div class="negotiation-list" id="leaseNegotiationList"></div>
+          <div id="analysisContent" style="display:none;flex-direction:column;gap:16px;">
+            <div class="verdict-display">
+              <div class="verdict-word" id="verdictWord">—</div>
+              <div class="verdict-score" id="verdictScore"></div>
+            </div>
+            <div>
+              <div class="section-title">Score Breakdown</div>
+              <div class="score-bars" id="scoreBars"></div>
+            </div>
+            <div>
+              <div class="section-title">True Cost</div>
+              <div class="cost-grid" id="costGrid"></div>
+            </div>
+            <div>
+              <div class="section-title">Negotiation Tips</div>
+              <div class="negotiation-list" id="negotiationList"></div>
+            </div>
+            <div id="reviewsSection" style="display:none;flex-direction:column;gap:10px;">
+              <div class="section-title">What Students Say</div>
+              <div id="reviewsSummaryBar" style="background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:12px;font-family:var(--mono);font-size:10px;line-height:1.8;color:var(--text2);"></div>
+              <div id="reviewsList" style="display:flex;flex-direction:column;gap:8px;"></div>
+            </div>
           </div>
         </div>
+
+        <div class="tab-pane" id="tab-roommate">
+          <div class="analysis-empty" id="roommateEmpty">
+            <div style="font-size:24px;opacity:0.3">◑</div>
+            <div class="label">Select a property first</div>
+          </div>
+          <div id="roommateContent" style="display:none;flex-direction:column;gap:16px;">
+            <div class="roommate-slider-wrap">
+              <div class="roommate-count-display" id="roommateCount">2</div>
+              <div class="roommate-count-label">Roommates</div>
+              <input type="range" min="1" max="4" value="2" id="roommateSlider" oninput="updateRoommates(this.value)">
+              <div class="roommate-scenarios" id="roommateScenarios"></div>
+            </div>
+            <div>
+              <div class="section-title">Fragility Rating</div>
+              <div id="fragilityDisplay" style="background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:14px;font-family:var(--mono);font-size:11px;color:var(--text2);line-height:1.7;"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tab-pane" id="tab-lease">
+          <div>
+            <div class="section-title">Lease DNA Scanner</div>
+            <p style="font-size:12px;color:var(--text2);line-height:1.6;margin-bottom:14px;">
+              Upload any lease PDF. Gemini reads every clause and surfaces the landmines before you sign.
+            </p>
+          </div>
+          <div class="lease-drop-zone" id="leaseDropZone">
+            <input type="file" accept=".pdf" id="leaseFile" onchange="scanLease(this)">
+            <div class="drop-icon">📄</div>
+            <div class="drop-title">Drop your lease here</div>
+            <div class="drop-sub">PDF only · Max 20MB · Analyzed by Gemini 2.5</div>
+          </div>
+          <div class="scan-progress" id="scanProgress">
+            <div class="progress-label" id="progressLabel">Reading lease document...</div>
+            <div class="progress-bar-bg"><div class="progress-bar-fill"></div></div>
+          </div>
+          <div id="leaseResults" style="display:none;flex-direction:column;gap:14px;">
+            <div>
+              <div class="section-title">Risk Score</div>
+              <div class="risk-score-display" id="riskScoreDisplay"></div>
+            </div>
+            <div>
+              <div class="section-title">Red Flags</div>
+              <div class="flag-list" id="flagList"></div>
+            </div>
+            <div>
+              <div class="section-title">Negotiation Leverage</div>
+              <div class="negotiation-list" id="leaseNegotiationList"></div>
+            </div>
+          </div>
+        </div>
+
       </div>
-
     </div>
   </div>
 </div>
@@ -369,7 +771,133 @@ input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 16p
 const API = 'http://127.0.0.1:8000';
 let selectedPropertyId = null;
 let currentRoommates = 2;
+let userPrefs = { move_in: null, roommates: 2, priority: 'balanced' };
+let currentStep = 0;
 
+// ── ONBOARDING ────────────────────────────────────────────────────────────
+function selectOption(step, key, value, el) {
+  // Deselect others in this step
+  document.querySelectorAll(`#step${step} .ob-option`).forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+  userPrefs[key] = value;
+
+  // Show next button
+  const nextBtn = document.getElementById(`next${step}`);
+  nextBtn.classList.add('visible');
+}
+
+function nextStep(step) {
+  document.getElementById(`step${currentStep}`).classList.remove('active');
+  document.getElementById(`dot${currentStep}`).classList.remove('active');
+  document.getElementById(`dot${currentStep}`).classList.add('done');
+  currentStep = step;
+  document.getElementById(`step${step}`).classList.add('active');
+  document.getElementById(`dot${step}`).classList.add('active');
+}
+
+function launchApp() {
+  // Hide steps, show launching
+  document.getElementById(`step${currentStep}`).classList.remove('active');
+  document.getElementById('obProgress').style.display = 'none';
+  document.getElementById('obLaunching').classList.add('active');
+
+  // Animate progress bar
+  setTimeout(() => {
+    document.getElementById('launchFill').style.width = '100%';
+  }, 100);
+
+  // Build initial search query from preferences
+  const roommates = userPrefs.roommates;
+  const priority = userPrefs.priority;
+
+  let searchQuery = '';
+  if (priority === 'location') searchQuery = `Show me the closest apartments to Auburn campus for ${roommates} people`;
+  else if (priority === 'price') searchQuery = `Show me the cheapest options near Auburn for ${roommates} people`;
+  else if (priority === 'amenities') searchQuery = `Show me furnished apartments with pool and gym near Auburn for ${roommates} people`;
+  else searchQuery = `Best overall apartments near Auburn University for ${roommates} people`;
+
+  // Transition to app after 2s
+  setTimeout(() => {
+    document.getElementById('onboarding').classList.add('exit');
+    document.getElementById('mainApp').classList.add('visible');
+    document.getElementById('prefsBar').style.display = 'flex';
+
+    // Set prefs bar
+    document.getElementById('prefMoveIn').textContent = userPrefs.move_in || 'Fall 2026';
+    document.getElementById('prefRoommates').textContent = `${roommates} ${roommates === 1 ? 'person' : 'people'}`;
+    document.getElementById('prefPriority').textContent = priority.charAt(0).toUpperCase() + priority.slice(1);
+
+    // Set quick prompts based on priority
+    setQuickPrompts();
+
+    // Auto-run first search
+    setTimeout(() => {
+      addMessage('agent', `Welcome to Nestiq! Based on your preferences, I'm searching for the best options for **${roommates} ${roommates === 1 ? 'person' : 'people'}** with **${priority}** as your top priority.`);
+      runAutoSearch(searchQuery);
+    }, 300);
+
+    // Remove onboarding from DOM after animation
+    setTimeout(() => {
+      document.getElementById('onboarding').style.display = 'none';
+    }, 700);
+  }, 2000);
+}
+
+function setQuickPrompts() {
+  const r = userPrefs.roommates;
+  const prompts = [
+    { label: `→ Pet friendly under $800/person`, query: `Pet friendly apartments under $800 per person for ${r} people near Auburn campus` },
+    { label: `→ What do students say about oLiv?`, query: `Tell me what real students say about oLiv Auburn` },
+    { label: `→ Cheapest furnished option`, query: `What is the cheapest fully furnished option near Auburn campus for ${r} people` },
+    { label: `→ Best location, money no object`, query: `What is the best location apartment near Auburn campus regardless of price` },
+  ];
+
+  document.getElementById('quickPrompts').innerHTML = prompts.map(p =>
+    `<button class="quick-btn" onclick="quickPrompt('${p.query.replace(/'/g, "\\'")}')">${p.label}</button>`
+  ).join('');
+}
+
+function resetOnboarding() {
+  userPrefs = { move_in: null, roommates: 2, priority: 'balanced' };
+  currentStep = 0;
+  document.getElementById('onboarding').style.display = 'flex';
+  document.getElementById('onboarding').classList.remove('exit');
+  document.getElementById('mainApp').classList.remove('visible');
+  document.getElementById('prefsBar').style.display = 'none';
+  document.getElementById('obProgress').style.display = 'flex';
+  document.getElementById('obLaunching').classList.remove('active');
+  document.getElementById('launchFill').style.width = '0%';
+
+  // Reset steps
+  for (let i = 0; i < 3; i++) {
+    document.getElementById(`step${i}`).classList.remove('active');
+    document.getElementById(`dot${i}`).classList.remove('active', 'done');
+    document.querySelectorAll(`#step${i} .ob-option`).forEach(o => o.classList.remove('selected'));
+    document.getElementById(`next${i}`).classList.remove('visible');
+  }
+  document.getElementById('step0').classList.add('active');
+  document.getElementById('dot0').classList.add('active');
+}
+
+async function runAutoSearch(query) {
+  const typing = addTyping();
+  try {
+    const res = await fetch(`${API}/chat`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: query, user_id: 'default_user' })
+    });
+    typing.remove();
+    const data = await res.json();
+    addMessage('agent', data.response || 'No response.');
+    if (data.properties?.length > 0) renderProperties(data.properties);
+  } catch (err) {
+    typing.remove();
+    addMessage('agent', 'Could not connect to the API. Make sure uvicorn is running.');
+  }
+}
+
+// ── TABS ──────────────────────────────────────────────────────────────────
 function switchTab(name, btn) {
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
   document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
@@ -377,6 +905,7 @@ function switchTab(name, btn) {
   document.getElementById('tab-' + name).classList.add('active');
 }
 
+// ── CHAT ──────────────────────────────────────────────────────────────────
 function quickPrompt(text) {
   document.getElementById('chatInput').value = text;
   sendMessage();
@@ -393,7 +922,6 @@ async function sendMessage() {
   input.value = '';
   addMessage('user', text);
   const typing = addTyping();
-
   try {
     const res = await fetch(`${API}/chat`, {
       method: 'POST',
@@ -401,13 +929,12 @@ async function sendMessage() {
       body: JSON.stringify({ message: text, user_id: 'default_user' })
     });
     typing.remove();
-    if (!res.ok) throw new Error('API error ' + res.status);
     const data = await res.json();
     addMessage('agent', data.response || 'No response.');
-    if (data.properties && data.properties.length > 0) renderProperties(data.properties);
+    if (data.properties?.length > 0) renderProperties(data.properties);
   } catch (err) {
     typing.remove();
-    addMessage('agent', 'Could not reach the API. Make sure the server is running: <code>uvicorn app.main:app --reload</code>');
+    addMessage('agent', 'Could not reach the API.');
   }
 }
 
@@ -435,6 +962,7 @@ function addTyping() {
   return d;
 }
 
+// ── PROPERTIES ────────────────────────────────────────────────────────────
 function renderProperties(props) {
   const grid = document.getElementById('propertiesGrid');
   document.getElementById('propertyCount').textContent = `${props.length} found`;
@@ -469,13 +997,10 @@ async function selectProperty(pid) {
   selectedPropertyId = pid;
   document.querySelectorAll('.property-card').forEach(c => c.classList.remove('selected'));
   document.getElementById(`card-${pid}`)?.classList.add('selected');
-
-  // Switch to analysis tab
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
   document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
   document.getElementById('tab-btn-analysis').classList.add('active');
   document.getElementById('tab-analysis').classList.add('active');
-
   document.getElementById('analysisEmpty').style.display = 'none';
   document.getElementById('analysisContent').style.display = 'flex';
   document.getElementById('verdictWord').textContent = '...';
@@ -483,11 +1008,15 @@ async function selectProperty(pid) {
   document.getElementById('scoreBars').innerHTML = '';
   document.getElementById('costGrid').innerHTML = '';
   document.getElementById('negotiationList').innerHTML = '';
+  document.getElementById('reviewsSection').style.display = 'none';
+
+  const budget = userPrefs.roommates === 1 ? 1200 : userPrefs.roommates === 2 ? 900 : userPrefs.roommates === 3 ? 800 : 700;
+  const roommates = userPrefs.roommates || 2;
 
   try {
     const [vRes, cRes] = await Promise.all([
-      fetch(`${API}/analyze/verdict?property_id=${pid}&roommates=2&budget=800&priorities=balanced`),
-      fetch(`${API}/analyze/cost?property_id=${pid}&roommates=2`),
+      fetch(`${API}/analyze/verdict?property_id=${pid}&roommates=${roommates}&budget=${budget}&priorities=${userPrefs.priority}`),
+      fetch(`${API}/analyze/cost?property_id=${pid}&roommates=${roommates}`),
     ]);
     const verdict = await vRes.json();
     const cost = await cRes.json();
@@ -522,13 +1051,12 @@ async function selectProperty(pid) {
       ? tips.map((t,i) => `<div class="negotiation-item"><div class="negotiation-num">0${i+1}</div><div>${t}</div></div>`).join('')
       : '<div style="font-family:var(--mono);font-size:10px;color:var(--text3)">Strong value — no negotiation needed.</div>';
 
-    // Setup roommate tab
     document.getElementById('roommateEmpty').style.display = 'none';
     document.getElementById('roommateContent').style.display = 'flex';
-    document.getElementById('roommateSlider').value = 2;
-    document.getElementById('roommateCount').textContent = 2;
-    updateRoommates(2);
-    // Load reviews
+    document.getElementById('roommateSlider').value = roommates;
+    document.getElementById('roommateCount').textContent = roommates;
+    updateRoommates(roommates);
+
     fetch(`${API}/reviews/${pid}`)
       .then(r => r.json())
       .then(data => {
@@ -551,7 +1079,7 @@ async function selectProperty(pid) {
 
   } catch (err) {
     document.getElementById('verdictWord').textContent = 'ERR';
-    document.getElementById('verdictScore').textContent = 'Analysis failed — check API connection';
+    document.getElementById('verdictScore').textContent = 'Analysis failed';
   }
 }
 
@@ -563,8 +1091,7 @@ async function updateRoommates(count) {
   try {
     const res = await fetch(`${API}/analyze/roommates?property_id=${selectedPropertyId}&planned_roommates=${count}`);
     const data = await res.json();
-    const scenarios = data.scenarios || [];
-    document.getElementById('roommateScenarios').innerHTML = scenarios.map(s => `
+    document.getElementById('roommateScenarios').innerHTML = (data.scenarios || []).map(s => `
       <div class="scenario-row ${s.roommates === count ? 'current' : ''} ${!s.affordable ? 'danger' : ''}">
         <div class="scenario-people">${s.roommates} person${s.roommates > 1 ? 's' : ''}</div>
         <div class="scenario-cost">$${Math.round(s.rent_per_person)}/mo</div>
@@ -582,13 +1109,10 @@ async function updateRoommates(count) {
 async function scanLease(input) {
   const file = input.files[0];
   if (!file) return;
-
-  // Switch to lease tab
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
   document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
   document.getElementById('tab-btn-lease').classList.add('active');
   document.getElementById('tab-lease').classList.add('active');
-
   document.getElementById('leaseDropZone').style.display = 'none';
   document.getElementById('scanProgress').classList.add('visible');
   document.getElementById('leaseResults').style.display = 'none';
@@ -620,7 +1144,6 @@ function renderLeaseResults(data) {
   const rs = data.risk_score || 0;
   const rc = rs >= 70 ? 'high' : rs >= 40 ? 'med' : 'low';
   const rl = rs >= 70 ? 'HIGH RISK' : rs >= 40 ? 'MODERATE RISK' : 'LOW RISK';
-
   document.getElementById('riskScoreDisplay').innerHTML = `
     <div class="risk-number ${rc}">${rs}</div>
     <div class="risk-details">
@@ -628,28 +1151,19 @@ function renderLeaseResults(data) {
       <div class="risk-summary-text">${a.risk_summary || ''}</div>
     </div>
   `;
-
   const flags = a.red_flags || [];
   document.getElementById('flagList').innerHTML = flags.length
     ? flags.map((f,i) => `
         <div class="flag-item ${f.severity}" style="animation-delay:${i*0.1}s">
-          <div class="flag-top">
-            <div class="flag-severity ${f.severity}">${f.severity}</div>
-            <div class="flag-clause">${f.clause || ''}</div>
-          </div>
+          <div class="flag-top"><div class="flag-severity ${f.severity}">${f.severity}</div><div class="flag-clause">${f.clause || ''}</div></div>
           <div class="flag-issue">${f.issue}</div>
           ${f.exact_language ? `<div class="flag-quote">"${f.exact_language.substring(0,180)}${f.exact_language.length > 180 ? '...' : ''}"</div>` : ''}
-        </div>
-      `).join('')
+        </div>`).join('')
     : '<div style="font-family:var(--mono);font-size:10px;color:var(--green)">No major red flags found.</div>';
-
-  const tips = a.negotiation_opportunities || [];
-  document.getElementById('leaseNegotiationList').innerHTML = tips.slice(0,5).map((t,i) => `
-    <div class="negotiation-item"><div class="negotiation-num">0${i+1}</div><div>${t}</div></div>
-  `).join('');
-
+  document.getElementById('leaseNegotiationList').innerHTML = (a.negotiation_opportunities || []).slice(0,5).map((t,i) =>
+    `<div class="negotiation-item"><div class="negotiation-num">0${i+1}</div><div>${t}</div></div>`).join('');
   document.getElementById('leaseResults').style.display = 'flex';
-  addMessage('agent', `**Lease scan complete.** Risk score: **${rs}/100** — ${rl}. Found **${data.red_flag_count} red flags** (${data.high_risk_count} high severity). Check the Lease DNA tab for the full breakdown.`);
+  addMessage('agent', `**Lease scan complete.** Risk score: **${rs}/100** — ${rl}. Found **${data.red_flag_count} red flags** (${data.high_risk_count} high severity).`);
 }
 </script>
 </body>
