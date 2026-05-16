@@ -170,3 +170,14 @@ def analyze_roommates(property_id: str, planned_roommates: int = 2):
 def analyze_reputation(property_id: str):
     from agents.analyst.agent import analyze_landlord_reputation
     return analyze_landlord_reputation(property_id=property_id)
+
+
+@app.get("/reviews/{property_id}")
+def get_property_reviews(property_id: str):
+    from pymongo import MongoClient
+    import os
+    mongo = MongoClient(os.getenv("MONGODB_URI"))
+    db = mongo[os.getenv("MONGODB_DATABASE", "nestiq")]
+    reviews = list(db.property_reviews.find({"property_id": property_id}, {"_id": 0}).sort("date", -1).limit(10))
+    summary = db.property_review_summaries.find_one({"property_id": property_id}, {"_id": 0})
+    return {"property_id": property_id, "summary": summary, "reviews": reviews, "count": len(reviews)}
