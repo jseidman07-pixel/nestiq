@@ -1,1 +1,1 @@
-from .agent import analyst_agent
+from .agent import analyst_agent, root_agent
