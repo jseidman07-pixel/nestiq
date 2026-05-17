@@ -127,8 +127,75 @@ async def chat(request: ChatRequest):
     from agents.scout.agent import search_properties_by_filters, search_properties_by_description, search_properties_near_campus
     import re
     msg = request.message.lower()
+
+    # Direct property-name search.
+    # This lets users ask about places like "191 College" or "Uncommon Auburn"
+    # without getting blocked by budget/floor-plan filters.
+    import os
+    from dotenv import load_dotenv
+    from pymongo import MongoClient
+
+    load_dotenv(".env")
+    db = MongoClient(os.getenv("MONGODB_URI"))[os.getenv("MONGODB_DATABASE", "nestiq")]
+
+    all_names = list(db.properties.find({}, {"_id": 0, "name": 1}))
+    mentioned_names = [
+        item["name"]
+        for item in all_names
+        if item.get("name") and item["name"].lower() in msg
+    ]
+
+    if mentioned_names:
+        docs = list(db.properties.find(
+            {"name": {"$in": mentioned_names}},
+            {"_id": 0}
+        ).limit(8))
+
+        props = []
+        for doc in docs:
+            rent = doc.get("rent_per_person") or doc.get("rent_min")
+
+            if not rent and doc.get("floor_plans"):
+                rents = []
+                for fp in doc.get("floor_plans", []):
+                    if isinstance(fp, dict):
+                        val = fp.get("rent_per_person") or fp.get("rent")
+                        if isinstance(val, (int, float)):
+                            rents.append(val)
+                rent = min(rents) if rents else None
+
+            props.append({
+                "property_id": doc.get("property_id"),
+                "name": doc.get("name"),
+                "address": doc.get("address"),
+                "rent_per_person": rent,
+                "rent_min": doc.get("rent_min"),
+                "rent_max": doc.get("rent_max"),
+                "distance_to_campus_miles": doc.get("distance_to_campus_miles"),
+                "reputation_score": doc.get("reputation_score") or doc.get("google_rating"),
+                "google_rating": doc.get("google_rating"),
+                "google_review_count": doc.get("google_review_count"),
+                "amenities": doc.get("amenities", []),
+                "tags": doc.get("tags", []),
+                "description": doc.get("description"),
+                "website": doc.get("website"),
+                "housing_category": doc.get("housing_category"),
+                "status": doc.get("status"),
+                "enrichment_status": doc.get("enrichment_status"),
+            })
+
+        lines = [f"Found **{len(props)} mentioned properties** in Nestiq:\n"]
+        for p in props:
+            rent_text = f"${p['rent_per_person']}/person" if p.get("rent_per_person") else "rent not fully enriched yet"
+            distance_text = f"{p.get('distance_to_campus_miles')}mi" if p.get("distance_to_campus_miles") is not None else "distance unknown"
+            rating_text = f"{p.get('reputation_score')}★" if p.get("reputation_score") is not None else "rating unknown"
+            lines.append(f"**{p['name']}** — {rent_text} · {distance_text} · {rating_text}")
+
+        lines.append("\nClick any property card to see the full analysis.")
+        return {"response": "\n".join(lines), "properties": props[:6]}
+
     budget_match = re.search(r"\$?(\d{3,4})", request.message)
-    budget = int(budget_match.group(1)) if budget_match else 900
+    budget = int(budget_match.group(1)) if budget_match else 2000
     roommate_match = re.search(r"(\d+)\s*(roommate|friend|person|people)", msg)
     roommates = int(roommate_match.group(1)) + 1 if roommate_match else 1
     pet = any(w in msg for w in ["pet", "dog", "cat"])
@@ -146,7 +213,13 @@ async def chat(request: ChatRequest):
     else:
         lines = [f"Found **{len(props)} properties** matching your criteria:\n"]
         for p in props[:4]:
-            lines.append(f"**{p['name']}** — ${p['rent_per_person']}/person · {p['distance_to_campus_miles']}mi · {p['reputation_score']}★")
+            rent = p.get("rent_per_person")
+            rent_text = f"${rent}/person" if rent is not None else "rent not fully enriched yet"
+            distance = p.get("distance_to_campus_miles")
+            distance_text = f"{distance}mi" if distance is not None else "distance unknown"
+            rating = p.get("reputation_score")
+            rating_text = f"{rating}★" if rating is not None else "rating unknown"
+            lines.append(f"**{p.get('name')}** — {rent_text} · {distance_text} · {rating_text}")
         lines.append("\nClick any property card to see the full analysis.")
         response_text = "\n".join(lines)
     return {"response": response_text, "properties": props[:6]}
