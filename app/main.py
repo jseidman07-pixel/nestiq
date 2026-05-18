@@ -192,7 +192,7 @@ async def chat(request: ChatRequest):
             lines.append(f"**{p['name']}** — {rent_text} · {distance_text} · {rating_text}")
 
         lines.append("\nClick any property card to see the full analysis.")
-        return {"response": "\n".join(lines), "properties": props[:6]}
+        return {"response": "\n".join(lines), "properties": props[:15]}
 
     budget_match = re.search(r"\$?(\d{3,4})", request.message)
     budget = int(budget_match.group(1)) if budget_match else 2000
@@ -212,7 +212,7 @@ async def chat(request: ChatRequest):
         response_text = "No properties matched. Try increasing your budget or relaxing filters."
     else:
         lines = [f"Found **{len(props)} properties** matching your criteria:\n"]
-        for p in props[:4]:
+        for p in props[:8]:
             rent = p.get("rent_per_person")
             rent_text = f"${rent}/person" if rent is not None else "rent not fully enriched yet"
             distance = p.get("distance_to_campus_miles")
@@ -222,7 +222,7 @@ async def chat(request: ChatRequest):
             lines.append(f"**{p.get('name')}** — {rent_text} · {distance_text} · {rating_text}")
         lines.append("\nClick any property card to see the full analysis.")
         response_text = "\n".join(lines)
-    return {"response": response_text, "properties": props[:6]}
+    return {"response": response_text, "properties": props[:15]}
 
 @app.get("/analyze/verdict")
 def analyze_verdict(property_id: str, roommates: int = 2, budget: int = 800, priorities: str = "balanced"):

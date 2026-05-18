@@ -253,6 +253,8 @@ def search_properties_by_description(
                         {"rent_min": {"$lte": max_rent_per_person}},
                         {"rent_min": None},
                         {"rent_min": {"$exists": False}},
+                         {"rent_per_person": None},
+            {"rent_per_person": {"$exists": False}},
                     ]
                 }
             },
@@ -338,6 +340,8 @@ def search_properties_by_filters(
                         {"rent_min": {"$lte": max_rent_per_person}},
                         {"rent_min": None},
                         {"rent_min": {"$exists": False}},
+                        {"rent_per_person": None},
+{"rent_per_person": {"$exists": False}},
                     ]
                 }
             ]
