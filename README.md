@@ -1,30 +1,37 @@
-# Nestiq
+# Nestiq — Auburn Housing Intelligence
 
-Nestiq is an AI-powered real estate investment agent built for the Google Cloud Rapid Agent Hackathon.
+AI-powered housing advisor for Auburn University students. Built for the Google Cloud Rapid Agent Hackathon (MongoDB track).
 
-The agent helps users analyze potential real estate investment deals by storing property data, comparable sales, underwriting assumptions, and deal verdicts in MongoDB. It uses Google Cloud ADK / Gemini for reasoning and MongoDB for structured deal memory and future vector search.
+## What It Does
+- Searches 35+ Auburn off-campus properties using MongoDB Atlas Vector Search
+- Gives every property a Sign / Negotiate / Pass verdict
+- Shows true cost including utilities and move-in fees
+- Models roommate scenarios and fragility risk
+- Surfaces real student reviews from Google, Reddit, and Yelp (2024+ only)
+- Scans lease PDFs with Gemini 2.5 for red flags and negotiation leverage
+- Autonomously scrapes apartment websites with Playwright + Gemini
+- Autonomously collects and analyzes new reviews nightly
 
-## Core Concept
-
-A user enters a property or deal scenario. Nestiq evaluates the investment using underwriting metrics such as:
-
-- Net operating income
-- Cap rate
-- Cash-on-cash return
-- Monthly cash flow
-- Rent assumptions
-- Comparable property context
-- Buy / Negotiate / Walk Away verdict
+## Live Demo
+https://nestiq-1035779764999.us-central1.run.app
 
 ## Tech Stack
+- Google ADK + Gemini 2.5 Flash
+- MongoDB Atlas + Vector Search
+- Vertex AI text-embedding-004
+- FastAPI + Cloud Run
+- Playwright (autonomous web scraping)
+- Google Places API
 
-- Python
-- Google ADK
-- Gemini / Google Cloud
-- MongoDB Atlas
-- PyMongo
-- dotenv
+## Run Locally
+```bash
+git clone https://github.com/jseidman07-pixel/nestiq
+cd nestiq
+python -m venv venv && source venv/bin/activate
+pip install -r requirements.txt
+cp .env.example .env  # add your keys
+uvicorn app.main:app --reload
+```
 
-## Status
-
-Initial project setup complete.
+## Hackathon
+Google Cloud Rapid Agent Hackathon · MongoDB Track · June 2026
